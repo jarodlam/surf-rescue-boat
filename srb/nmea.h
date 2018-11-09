@@ -30,7 +30,7 @@ class NMEA {
      *   - End with * and checksum
      *   - Correct checksum
      */
-    bool validateSentence(const char *s);
+    int validateSentence(const char *s);
 
     
   private:

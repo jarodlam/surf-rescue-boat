@@ -1,6 +1,6 @@
 all:
-	g++ *.cpp ../srb/*.cpp -I../srb -o test
+	g++ *.cpp ../srb/*.cpp -I../srb -o test.out
 run:
-	./test
+	./test.out
 clean:
-	rm test
+	rm test.out

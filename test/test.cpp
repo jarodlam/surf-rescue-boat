@@ -13,5 +13,7 @@ NMEA nmea;
 int main() {
 	const char *sent = nmea.constructSentence(3, "SRBSM", "124.54", "4.3");
 	printf("%s\n", sent);
+	printf("%d\n", nmea.validateSentence(sent));
+	printf("%d\n", nmea.validateSentence("$blah*1a"));
 	return 0;
 }

@@ -1,12 +1,13 @@
 /*
-   nmea.cpp
-   Library for manipulating NMEA-0183 strings
-   Written by Jarod Lam
-*/
+ * nmea.cpp
+ * Library for manipulating NMEA-0183 strings
+ * Written by Jarod Lam
+ */
 
 #include <string.h>
 #include <stdarg.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include "nmea.h"
 
 NMEA::NMEA(void) {
@@ -30,6 +31,10 @@ char *NMEA::constructSentence(int n, ...) {
 
     // Get the next argument
     const char *val = va_arg(args, const char *);
+    int val_len = strlen(val);
+
+    // Stop parsing if the buffer will overflow
+    if (buf_ind + val_len >= NMEA_BUFFER_SIZE - 5) break;
 
     // Copy the string into the buffer
     strcpy(&_buffer[buf_ind], val);
@@ -68,5 +73,22 @@ unsigned char NMEA::generateChecksum(const char *s) {
   }
   
   return checksum;
+}
+
+int NMEA::validateSentence(const char *s) {
+  int s_len = strlen(s);
+  
+  // Check if it starts with a dollar sign
+  if (s[0] != '$') return 0;
+
+  // Check if it ends with an asterisk
+  if (s[s_len-3] != '*') return 0;
+
+  // Check the checksum
+  char cs_recv = strtol(&s[s_len-2], NULL, 16);
+  char cs_calc = generateChecksum(s);
+  if (cs_recv != cs_calc) return 0;
+
+  return 1;
 }
 
