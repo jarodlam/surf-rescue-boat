@@ -53,7 +53,7 @@ char *NMEA::constructSentence(int n, ...) {
 
   // Append checksum
   char cs_string[2];
-  sprintf(cs_string, "%.2x", generateChecksum(_buffer));
+  sprintf(cs_string, "%.2X", generateChecksum(_buffer));
   strcpy(&_buffer[buf_ind], cs_string);
   buf_ind += 2;
   
