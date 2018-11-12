@@ -12,52 +12,112 @@
 
 NMEA::NMEA(void) {
   memset(&_buffer, 0, sizeof(_buffer));
+  _sentence[0] = '$';
 }
 
-char *NMEA::constructSentence(int n, ...) {
-  // Declare a va_list macro and initialize it with va_start
-  va_list args;
-  va_start(args, n);
+const char *NMEA::read() {
+  return _sentence;
+}
 
-  // Initialise the buffer
-  memset(&_buffer, 0, sizeof(_buffer));
+void NMEA::write(const char *s) {
+  memset(_sentence, 0, sizeof(_sentence));
+  strcpy(_sentence, s);
+}
 
-  // Start the sentence with a dollar sign
-  memset(&_buffer, '$', 1);
-  int buf_ind = 1;
+void NMEA::begin() {
+  memset(_sentence, 0, sizeof(_sentence));
+  _sentence[0] = '$';
+}
 
-  // Loop over each argument and append to the buffer
-  for (int i = 0; i < n; i++) {
+void NMEA::append(const char *s) {
+  int fieldLen = strlen(s);
+  int sentLen = strlen(_sentence);
 
-    // Get the next argument
-    const char *val = va_arg(args, const char *);
-    int val_len = strlen(val);
+  // Abort if the sentence will become too long
+  if ((fieldLen + sentLen) > (NMEA_BUFFER_SIZE + 5)) return;
 
-    // Stop parsing if the buffer will overflow
-    if (buf_ind + val_len >= NMEA_BUFFER_SIZE - 5) break;
-
-    // Copy the string into the buffer
-    strcpy(&_buffer[buf_ind], val);
-    buf_ind += strlen(val);
-
-    // Add a comma if this is not the final parameter
-    if (i < n-1) {
-      strcpy(&_buffer[buf_ind], ",");
-      buf_ind++;
-    }
+  // Add a comma if necessary
+  if (_sentence[sentLen-1] != '$') {
+    strcat(_sentence, ","); 
   }
 
-  // Append asterisk
-  strcpy(&_buffer[buf_ind], "*");
-  buf_ind++;
+  // Concatenate
+  strcat(_sentence, s);
+}
 
-  // Append checksum
+void NMEA::appendChecksum() {
   char cs_string[2];
-  sprintf(cs_string, "%.2X", generateChecksum(_buffer));
-  strcpy(&_buffer[buf_ind], cs_string);
-  buf_ind += 2;
+  sprintf(cs_string, "%.2X", generateChecksum(_sentence));
+  strcat(_sentence, "*");
+  strcat(_sentence, cs_string);
+}
+
+int NMEA::validate() {
+  int sentLen = strlen(_sentence);
   
-  return _buffer;
+  // Check if it starts with a dollar sign
+  if (_sentence[0] != '$') return 0;
+
+  // Check if it ends with an asterisk
+  if (_sentence[sentLen-3] != '*') return 0;
+
+  // Check the checksum
+  char cs_recv = strtol(&_sentence[sentLen-2], NULL, 16);
+  char cs_calc = generateChecksum(_sentence);
+  if (cs_recv != cs_calc) return 0;
+
+  return 1;
+}
+
+const char *NMEA::nextField() {
+  int startInd = 0;
+  int endInd = 0;
+  int len = strlen(_sentence);
+
+  // Copy the string into the buffer
+  if (len > NMEA_BUFFER_SIZE) return 0;
+  memset(&_buffer, 0, sizeof(_buffer));
+  strcpy(_buffer, _sentence);
+
+  // Check for end of sentence
+  if (_sentence[0] == '*') return 0;
+
+  for (int i = 0; i < len; i++) {
+    // Check for dollar sign to start the string
+    if (_buffer[i] == '$') {
+      startInd = i + 1;
+    }
+    // Check for comma or asterisk to end the string
+    if ((_buffer[i] == ',') || (_buffer[i] == '*')) {
+      endInd = i;
+      break;
+    }
+  }
+  if (startInd > endInd) return 0;
+  
+  // Truncate the string
+  strcpy(_sentence, &_buffer[endInd+1]);
+  
+  // Return the field
+  if (_buffer[0] == ',') {
+    return 0;
+  } else {
+    char returnVal[len];
+    memset(returnVal, 0, len);
+    strncpy(returnVal, &_buffer[startInd], endInd-startInd);
+    strcpy(_buffer, returnVal);
+    return _buffer;
+  }
+}
+
+int NMEA::numFields() {
+  int count = 0;
+  for (int i = 0; i < strlen(_sentence); i++) {
+    if (_sentence[i] == ',') {
+      count++;
+    }
+  }
+  return count + 1;
 }
 
 unsigned char NMEA::generateChecksum(const char *s) {
@@ -74,72 +134,3 @@ unsigned char NMEA::generateChecksum(const char *s) {
   
   return checksum;
 }
-
-int NMEA::validateSentence(const char *s) {
-  int s_len = strlen(s);
-  
-  // Check if it starts with a dollar sign
-  if (s[0] != '$') return 0;
-
-  // Check if it ends with an asterisk
-  if (s[s_len-3] != '*') return 0;
-
-  // Check the checksum
-  char cs_recv = strtol(&s[s_len-2], NULL, 16);
-  char cs_calc = generateChecksum(s);
-  if (cs_recv != cs_calc) return 0;
-
-  return 1;
-}
-
-const char *NMEA::nextField(char *s) {
-  int startInd = 0;
-  int endInd = 0;
-  int len = strlen(s);
-
-  // Copy the string into the buffer
-  if (len > NMEA_BUFFER_SIZE) return 0;
-  memset(&_buffer, 0, sizeof(_buffer));
-  strcpy(_buffer, s);
-
-  // Check for end of sentence
-  if (s[0] == '*') return 0;
-
-  for (int i = 0; i < len; i++) {
-    // Check for dollar sign to start the string
-    if (_buffer[i] == '$') {
-      startInd = i + 1;
-    }
-    // Check for comma or asterisk to end the string
-    if ((_buffer[i] == ',') || (_buffer[i] == '*')) {
-      endInd = i;
-      break;
-    }
-  }
-  if (startInd > endInd) return 0;
-  
-  // Truncate the string
-  strcpy(s, &_buffer[endInd+1]);
-  
-  // Return the field
-  if (_buffer[0] == ',') {
-    return 0;
-  } else {
-    char returnVal[len];
-    memset(returnVal, 0, len);
-    strncpy(returnVal, &_buffer[startInd], endInd-startInd);
-    strcpy(_buffer, returnVal);
-    return _buffer;
-  }
-}
-
-int NMEA::numFields(char *s) {
-  int count = 0;
-  for (int i = 0; i < strlen(s); i++) {
-    if (s[i] == ',') {
-      count++;
-    }
-  }
-  return count + 1;
-}
-

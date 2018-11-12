@@ -12,21 +12,31 @@
 class NMEA {
   public:
     NMEA();
+    
+    /*
+     * Returns the sentence.
+     */
+    const char *read();
+    
+    /*
+     * Clear and set the sentence.
+     */
+    void write(const char *s);
 
     /*
-     * Construct a NMEA sentence.
-     * 
-     * Accepts a variatic number of char strings,
-     * outputs formatted string including checksum.
+     * Initialise the sentence with a dollar sign.
      */
-    char *constructSentence(int n, ...);
+    void begin();
+    
+    /*
+     * Append a field to the sentence.
+     */
+    void append(const char *s);
 
     /*
-     * Generate the NMEA checksum.
-     * 
-     * Automatically skips $ and terminates at *.
+     * Calculate the checksum and append to the sentence.
      */
-    unsigned char generateChecksum(const char *s);
+    void appendChecksum();
 
     /*
      * Checks if an NMEA sentence is valid.
@@ -36,26 +46,38 @@ class NMEA {
      *   - End with * and checksum
      *   - Correct checksum
      */
-    int validateSentence(const char *s);
+    int validate();
 
     /*
-     * Returns the next argument of a sentence.
+     * Returns the next argument of the sentence.
      * 
      * Removes the argument from the string once read.
      * Returns NULL if end of the string is reached.
      */
-    const char *nextField(char *s);
+    const char *nextField();
 
     /*
-     * Returns the number of fields in a sentence.
+     * Returns the number of fields in the sentence.
      */
-    int numFields(char *s);
+    int numFields();
      
   private:
     /*
-     * Character buffer for containing sentences
+     * Character buffer working space
      */
     char _buffer[NMEA_BUFFER_SIZE];
+
+    /*
+     * Where the sentence is stored
+     */
+    char _sentence[NMEA_BUFFER_SIZE];
+
+    /*
+     * Generate the NMEA checksum.
+     * 
+     * Automatically skips $ and terminates at *.
+     */
+    unsigned char generateChecksum(const char *s);
 };
 
 #endif
