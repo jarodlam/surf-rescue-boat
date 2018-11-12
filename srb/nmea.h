@@ -1,82 +1,82 @@
 /*
- * nmea.h
- * Library for manipulating NMEA-0183 strings
- * Written by Jarod Lam
- */
+   nmea.h
+   Library for manipulating NMEA-0183 strings
+   Written by Jarod Lam
+*/
 
 #ifndef nmea_h
 #define nmea_h
 
 #define NMEA_BUFFER_SIZE 256
 
-class NMEA {
+class Nmea {
   public:
-    NMEA();
-    
+    Nmea();
+
     /*
-     * Returns the sentence.
-     */
+       Returns the sentence.
+    */
     const char *read();
-    
+
     /*
-     * Clear and set the sentence.
-     */
+       Clear and set the sentence.
+    */
     void write(const char *s);
 
     /*
-     * Initialise the sentence with a dollar sign.
-     */
+       Initialise the sentence with a dollar sign.
+    */
     void begin();
-    
+
     /*
-     * Append a field to the sentence.
-     */
+       Append a field to the sentence.
+    */
     void append(const char *s);
 
     /*
-     * Calculate the checksum and append to the sentence.
-     */
+       Calculate the checksum and append to the sentence.
+    */
     void appendChecksum();
 
     /*
-     * Checks if an NMEA sentence is valid.
-     * 
-     * Needs to:
-     *   - Start with a $
-     *   - End with * and checksum
-     *   - Correct checksum
-     */
+       Checks if an NMEA sentence is valid.
+
+       Needs to:
+         - Start with a $
+         - End with * and checksum
+         - Correct checksum
+    */
     int validate();
 
     /*
-     * Returns the next argument of the sentence.
-     * 
-     * Removes the argument from the string once read.
-     * Returns NULL if end of the string is reached.
-     */
+       Returns the next argument of the sentence.
+
+       Removes the argument from the string once read.
+       Returns NULL if end of the string is reached.
+    */
     const char *nextField();
 
     /*
-     * Returns the number of fields in the sentence.
-     */
+       Returns the number of fields in the sentence.
+    */
     int numFields();
-     
+
   private:
     /*
-     * Character buffer working space
-     */
+       Character buffer working space
+    */
     char _buffer[NMEA_BUFFER_SIZE];
 
     /*
-     * Where the sentence is stored
-     */
+       Where the sentence is stored
+    */
     char _sentence[NMEA_BUFFER_SIZE];
 
     /*
-     * Generate the NMEA checksum.
-     * 
-     * Automatically skips $ and terminates at *.
-     */
+       Generate the NMEA checksum.
+
+       Automatically skips $ and terminates at *.
+    */
     unsigned char generateChecksum(const char *s);
 };
 

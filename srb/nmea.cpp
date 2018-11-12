@@ -9,27 +9,28 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "nmea.h"
+#include <Arduino.h>
 
-NMEA::NMEA(void) {
+Nmea::Nmea(void) {
   memset(&_buffer, 0, sizeof(_buffer));
   _sentence[0] = '$';
 }
 
-const char *NMEA::read() {
+const char *Nmea::read() {
   return _sentence;
 }
 
-void NMEA::write(const char *s) {
+void Nmea::write(const char *s) {
   memset(_sentence, 0, sizeof(_sentence));
   strcpy(_sentence, s);
 }
 
-void NMEA::begin() {
+void Nmea::begin() {
   memset(_sentence, 0, sizeof(_sentence));
   _sentence[0] = '$';
 }
 
-void NMEA::append(const char *s) {
+void Nmea::append(const char *s) {
   int fieldLen = strlen(s);
   int sentLen = strlen(_sentence);
 
@@ -45,14 +46,14 @@ void NMEA::append(const char *s) {
   strcat(_sentence, s);
 }
 
-void NMEA::appendChecksum() {
+void Nmea::appendChecksum() {
   char cs_string[2];
   sprintf(cs_string, "%.2X", generateChecksum(_sentence));
   strcat(_sentence, "*");
   strcat(_sentence, cs_string);
 }
 
-int NMEA::validate() {
+int Nmea::validate() {
   int sentLen = strlen(_sentence);
   
   // Check if it starts with a dollar sign
@@ -69,7 +70,7 @@ int NMEA::validate() {
   return 1;
 }
 
-const char *NMEA::nextField() {
+const char *Nmea::nextField() {
   int startInd = 0;
   int endInd = 0;
   int len = strlen(_sentence);
@@ -110,7 +111,7 @@ const char *NMEA::nextField() {
   }
 }
 
-int NMEA::numFields() {
+int Nmea::numFields() {
   int count = 0;
   for (int i = 0; i < strlen(_sentence); i++) {
     if (_sentence[i] == ',') {
@@ -120,7 +121,7 @@ int NMEA::numFields() {
   return count + 1;
 }
 
-unsigned char NMEA::generateChecksum(const char *s) {
+unsigned char Nmea::generateChecksum(const char *s) {
   unsigned char checksum = 0;
   
   for (int i = 0; i < strlen(s); i++) {
