@@ -13,5 +13,6 @@ void setup() {
 }
 
 void loop() {
-  
+  char *sent = nmea.constructSentence(3, "SRBSM", "124.54", "4.3");
+  Serial.println(nmea.constructSentence(3, "SRBSM", "124.54", "4.3"));
 }

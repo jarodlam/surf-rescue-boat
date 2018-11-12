@@ -92,3 +92,54 @@ int NMEA::validateSentence(const char *s) {
   return 1;
 }
 
+const char *NMEA::nextField(char *s) {
+  int startInd = 0;
+  int endInd = 0;
+  int len = strlen(s);
+
+  // Copy the string into the buffer
+  if (len > NMEA_BUFFER_SIZE) return 0;
+  memset(&_buffer, 0, sizeof(_buffer));
+  strcpy(_buffer, s);
+
+  // Check for end of sentence
+  if (s[0] == '*') return 0;
+
+  for (int i = 0; i < len; i++) {
+    // Check for dollar sign to start the string
+    if (_buffer[i] == '$') {
+      startInd = i + 1;
+    }
+    // Check for comma or asterisk to end the string
+    if ((_buffer[i] == ',') || (_buffer[i] == '*')) {
+      endInd = i;
+      break;
+    }
+  }
+  if (startInd > endInd) return 0;
+  
+  // Truncate the string
+  strcpy(s, &_buffer[endInd+1]);
+  
+  // Return the field
+  if (_buffer[0] == ',') {
+    return 0;
+  } else {
+    char returnVal[len];
+    memset(returnVal, 0, len);
+    strncpy(returnVal, &_buffer[startInd], endInd-startInd);
+    strcpy(_buffer, returnVal);
+    return _buffer;
+  }
+}
+
+int NMEA::numFields(char *s) {
+  int count = 0;
+  for (int i = 0; i < strlen(s); i++) {
+    if (s[i] == ',') {
+      count++;
+    }
+  }
+  return count + 1;
+}
+

@@ -12,7 +12,13 @@
 class NMEA {
   public:
     NMEA();
-    
+
+    /*
+     * Construct a NMEA sentence.
+     * 
+     * Accepts a variatic number of char strings,
+     * outputs formatted string including checksum.
+     */
     char *constructSentence(int n, ...);
 
     /*
@@ -32,7 +38,19 @@ class NMEA {
      */
     int validateSentence(const char *s);
 
-    
+    /*
+     * Returns the next argument of a sentence.
+     * 
+     * Removes the argument from the string once read.
+     * Returns NULL if end of the string is reached.
+     */
+    const char *nextField(char *s);
+
+    /*
+     * Returns the number of fields in a sentence.
+     */
+    int numFields(char *s);
+     
   private:
     /*
      * Character buffer for containing sentences
