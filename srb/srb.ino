@@ -13,6 +13,18 @@ void setup() {
 }
 
 void loop() {
-  char *sent = nmea.constructSentence(3, "SRBSM", "124.54", "4.3");
-  Serial.println(nmea.constructSentence(3, "SRBSM", "124.54", "4.3"));
+  nmea.begin();
+  Serial.println(nmea.read());
+  nmea.append("hello");
+  Serial.println(nmea.read());
+  nmea.append("how are you");
+  Serial.println(nmea.read());
+  nmea.appendChecksum();
+  Serial.println(nmea.read());
+  Serial.println(nmea.validate());
+  Serial.println(nmea.numFields());
+  const char *arg = nmea.nextField();
+  printf("%s\n", arg);
+  Serial.println(nmea.read());
+  delay(10000);
 }
