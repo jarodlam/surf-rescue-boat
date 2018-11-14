@@ -11,6 +11,7 @@
 
 NmeaGps::NmeaGps(Stream *port) {
   _serial = port;
+  clear_buffer();
 }
 
 void NmeaGps::update() {
@@ -34,10 +35,16 @@ void NmeaGps::update() {
       strncat(_buffer, &c, 1);
     }
   }
+
+  // Timeout and clear the buffer
+  if (millis() - _bufferClearTime > GPS_TIMEOUT) {
+    clear_buffer();
+  }
 }
 
 void NmeaGps::clear_buffer() {
   memset(&_buffer, 0, sizeof(_buffer));
+  _bufferClearTime = millis();
 }
 
 void NmeaGps::parse_buffer() {

@@ -10,6 +10,7 @@
 #include <Arduino.h>
 
 #define GPS_BUFFER_SIZE 256
+#define GPS_TIMEOUT 1000
 
 class NmeaGps {
   public:
@@ -79,6 +80,11 @@ class NmeaGps {
      * Convert knots string to m/s.
      */
     float knotsToMps(const char *s);
+
+    /*
+     * 
+     */
+    unsigned long _bufferClearTime;
 };
 
 #endif
