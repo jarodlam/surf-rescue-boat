@@ -9,7 +9,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "nmea.h"
+
+#ifdef ARDUINO
 #include <Arduino.h>
+#endif
 
 Nmea::Nmea(void) {
   memset(&_buffer, 0, sizeof(_buffer));
