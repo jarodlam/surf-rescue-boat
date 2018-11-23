@@ -50,7 +50,7 @@ void remove_crlf(char *str) {
  */
 int serial_write(const char *input) {
 	int n = write(fd_out, input, strlen(input));
-	fprintf(stderr, input, strlen(input));
+	fprintf(stderr, "sent: %s\n", input);
 	return n;
 }
 
@@ -85,7 +85,9 @@ int sentence_write(const char *input) {
  */
 int sentence_read() {
 	int n = serial_read(buffer);
-	//printf("input: %s\n", buffer);
+	if (n > 0) {
+		fprintf(stderr, "received: %s\n", buffer);
+	}
 	return n;
 }
 
@@ -95,10 +97,12 @@ int main(int argc, char** argv) {
 		return 1;
 	}
 	open_port(argv[1]);
+	printf("%d, %d\n", fd_in, fd_out);
 	
 	while (1) {
+		printf("hi\n");
 		char input[MAX_LENGTH];
-		int n = read(0, input, sizeof(input));
+		int n = read(0, input, MAX_LENGTH);
 		if (n > 0) {
 			sentence_write(input);
 		}
