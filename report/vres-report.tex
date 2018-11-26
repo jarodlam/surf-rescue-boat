@@ -1,5 +1,24 @@
 \documentclass[a4paper]{IEEEtran}
 
+% Packages
+
+% NMEA spec environment
+\newenvironment{nmeaspec}[1]
+{
+\newcommand{\field}[2]{\texttt{##1} & ##2 \\}
+\vspace{0.2cm}
+\noindent\texttt{#1}
+\vspace{0.2cm}
+
+\noindent Where: \vspace{0.1cm}\\  \noindent
+\vspace{0.2cm}
+\begin{tabular}{ll}
+}
+{
+\end{tabular}
+}
+
+% Title, author, etc.
 \title{Autonomous surf life saving device}
 \author{Jarod Lam}
 \IEEEspecialpapernotice{2018-2019 VRES project at Queensland University of Technology}
@@ -13,7 +32,52 @@ Make boat that saves people
 
 \section{Introduction}
 
+
 \section{System overview}
 
+
+\section{Communications}
+Communications between the SRB and the base station are done using XBee radios. By attaching a pair of XBee modules to the base station computer and the on-board Arduino, a virtual serial connection is effectively created between the two devices.
+
+\subsection{NMEA 0183 protocol}
+NMEA 0183 is a communications specification designed to create a standardised serial interface for GPS devices. Every NMEA `sentence' begins with a \texttt{\$} and ends with \texttt{*CS\textbackslash r\textbackslash n}, where \texttt{CS} is a two-digit hexadecimal checksum of the sentence.
+
+A common NMEA sentence type is \texttt{GPRMC}, the GPS recommended minimum. \texttt{GPRMC} sentences are specified as follows: \cite{gpsinfo}
+
+\begin{nmeaspec}{\$GPRMC,<Time>,<Status>,<Lat>,<LatDir>,\\<Lon>,<LonDir>,<Speed>,<Angle>,<Date>,\\<MagVar>,<MagDir>*CS}
+\field{<Time>}{UTC timestamp in HHmmss format}
+\field{<Status>}{Status \texttt{A}=active, \texttt{V}=void}
+\field{<Lat>}{Latitude in ddmm.mmm format}
+\field{<LatDir>}{\texttt{N} or \texttt{S} hemisphere}
+\field{<Lon>}{Longitude in dddmm.mmm format}
+\field{<LonDir>}{\texttt{E} or \texttt{W} hemisphere}
+\field{<Speed>}{Ground speed in knots}
+\field{<Angle>}{Track angle in degrees from north}
+\field{<Date>}{Date in DDMMYY format}
+\field{<MagVar>}{Magnetic variation magnitude}
+\field{<MagDir>}{Magnetic variation direction}
+\field{*CS}{Two-digit hexadecimal checksum}
+\end{nmeaspec}
+
+A NMEA sentence parser was written for the SRB to interpret messages from the on-board GPS and extract location information.
+
+\subsection{Proprietary NMEA sentences}
+Some advantages of using NMEA sentences are that they are standardised, human-readable, robust, and relatively simple to implement. Specified below is a set of custom NMEA sentence types was created for communication between the SRB and the base station.
+
+\subsubsection{SRBSM - Status Message}
+The \texttt{SRBSM} sentence is sent periodically by the SRB to update the base station with status information.
+
+\begin{nmeaspec}{\$SRBSM,<ID>,<Lat>,<Lon>,<Speed>,<Heading>,\\<BattV>*CS}
+\field{<ID>}{ID of target SRB}
+\field{<Lat>}{Latitude in decimal degrees}
+\field{<Lon>}{Longitude in decimal degrees}
+\field{<Speed>}{Speed in metres per second}
+\field{<Heading>}{Compass heading in degrees from north}
+\field{<BattV>}{Current battery voltage}
+\field{*CS}{Two-digit hexadecimal checksum}
+\end{nmeaspec}
+
+\bibliography{bibliography}
+\bibliographystyle{IEEEtran}
 
 \end{document}
