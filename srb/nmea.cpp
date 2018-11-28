@@ -49,6 +49,20 @@ void Nmea::append(const char *s) {
   strcat(_sentence, s);
 }
 
+void Nmea::append(int d) {
+  char s[16];
+  snprintf(s, 16, "%d", d);
+  append(s);
+}
+
+void Nmea::append(float d, int places) {
+  // TODO: strip spaces
+  char s[16];
+  dtostrf(d, 16, 2, s);
+  Serial.println(s);
+  append(s);
+}
+
 void Nmea::appendChecksum() {
   char cs_string[2];
   sprintf(cs_string, "%.2X", generateChecksum(_sentence));

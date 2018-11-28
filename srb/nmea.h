@@ -32,6 +32,8 @@ class Nmea {
        Append a field to the sentence.
     */
     void append(const char *s);
+    void append(int d);
+    void append(float d, int places);
 
     /*
        Calculate the checksum and append to the sentence.
