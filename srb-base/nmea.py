@@ -24,13 +24,13 @@ class Nmea:
             if c == '*'.encode()[0]: break
             checksum ^= c
         
-        checksumString = "%X" % checksum
+        checksumString = "%02X" % checksum
         return checksumString
         
     # Append checksum to the sentence.
     def appendChecksum(self):
         checksum = self.generateChecksum()
-        self.append('*' + checksum)
+        self.sentence = self.sentence + '*' + checksum
     
     # Check if the sentence is valid.
     def validate(self):
