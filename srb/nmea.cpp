@@ -49,17 +49,15 @@ void Nmea::append(const char *s) {
   strcat(_sentence, s);
 }
 
-void Nmea::append(int d) {
+void Nmea::appendInt(int d) {
   char s[16];
   snprintf(s, 16, "%d", d);
   append(s);
 }
 
-void Nmea::append(float d, int places) {
-  // TODO: strip spaces
+void Nmea::appendFloat(float d, int places) {
   char s[16];
-  dtostrf(d, 16, 2, s);
-  Serial.println(s);
+  dtostrf(d, 0, places, s);
   append(s);
 }
 

@@ -26,6 +26,11 @@ class SrbComms {
     void update();
 
     /*
+     * Send a message over serial
+     */
+    void sendMessage(const char* s);
+
+    /*
      * Send SRBSM message
      */
     void sendSRBSM(SrbStats stats);

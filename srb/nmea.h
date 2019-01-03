@@ -32,8 +32,8 @@ class Nmea {
        Append a field to the sentence.
     */
     void append(const char *s);
-    void append(int d);
-    void append(float d, int places);
+    void appendInt(int d);
+    void appendFloat(float d, int places);
 
     /*
        Calculate the checksum and append to the sentence.
@@ -80,6 +80,12 @@ class Nmea {
        Automatically skips $ and terminates at *.
     */
     unsigned char generateChecksum(const char *s);
+
+    /*
+     * Powers of 10 for float to string conversion
+     */
+    const long _POW10[11] = {1, 10, 100, 1000, 10000, 100000, 1000000,
+                             10000000, 100000000, 1000000000, 10000000000};
 };
 
 #endif
