@@ -72,8 +72,18 @@ The \texttt{SRBSM} sentence is sent periodically by the SRB to update the base s
 \field{<Lat>}{Latitude in decimal degrees}
 \field{<Lon>}{Longitude in decimal degrees}
 \field{<Speed>}{Speed in metres per second}
-\field{<Heading>}{Compass heading in degrees from north}
+\field{<Heading>}{Compass heading in degrees CW from north}
 \field{<BattV>}{Current battery voltage}
+\field{*CS}{Two-digit hexadecimal checksum}
+\end{nmeaspec}
+
+\subsubsection{SRBJS - Joystick}
+The \texttt{SRBJS} sentence is sent by the base station for manual control of the SRB.
+
+\begin{nmeaspec}{\$SRBJS,<ID>,<Power>,<Heading>*CS}
+\field{<ID>}{ID of target SRB}
+\field{<Power>}{Forward power from 0-100}
+\field{<Heading>}{Compass heading in degrees CW from north}
 \field{*CS}{Two-digit hexadecimal checksum}
 \end{nmeaspec}
 
