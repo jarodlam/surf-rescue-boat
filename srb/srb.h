@@ -38,6 +38,15 @@ class SrbStats {
      */
     float battV;
 
+    /*
+     * Forward power percentage from 0-100
+     */
+    int forwardPower;
+
+    /*
+     * Target compass heading
+     */
+    float targetHeading;
 };
 
 #endif

@@ -9,9 +9,9 @@
 #include "nmea.h"
 #include "nmea_gps.h"
 
-SrbStats stats;              // Stats object
-SrbComms comms(&Serial1);    // Comms object
-NmeaGps gps(&Serial);        // GPS object
+SrbStats stats;                   // Stats object
+SrbComms comms(&Serial1, &stats); // Comms object
+NmeaGps gps(&Serial);             // GPS object
 
 void setup() {
   // Start serial
@@ -25,12 +25,15 @@ void setup() {
   stats.speed = 3.4749;
   stats.heading = 174.3;
   stats.battV = 11.434;
+  stats.forwardPower = 0;
+  stats.targetHeading = 0;
 }
 
 void loop() {
   gps.update();
-
-  //Serial.println("$GPRMC,123519,A,4807.038,N,01131.000,E,022.4,084.4,230394,003.1,W*6A");
-  comms.sendSRBSM(stats);
+  comms.update();
+  
+  comms.sendSRBSM();
+  
   delay(100);
 }

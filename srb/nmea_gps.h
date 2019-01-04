@@ -82,7 +82,7 @@ class NmeaGps {
     float knotsToMps(const char *s);
 
     /*
-     * 
+     * Milliseconds since the buffer was last cleared.
      */
     unsigned long _bufferClearTime;
 };

@@ -87,8 +87,8 @@ class Application(ttk.Frame):
             self.ser = serial.Serial(port, 9600, timeout=1)
             self.serialThread.start()
             self.log("Serial port opened at %s" % self.ser.name)
-        except:
-            self.log("Error opening port %s" % port, error=True)
+        except Exception as err:
+            self.log("Error opening port %s: %s" % (port, str(err)), error=True)
             self.closePort()
     
     # Close a serial port
@@ -116,8 +116,8 @@ class Application(ttk.Frame):
                 self.log("[RECV] %s" % s.sentence)
             else:
                 self.log("[RECV] %s" % s.sentence, error=True)
-        except:
-            self.log("Error parsing sentence!", error=True)
+        except Exception as err:
+            self.log("Error parsing sentence: %s" % str(err), error=True)
     
     # Send a sentence and add checksum
     def sendSentence(self, *args):

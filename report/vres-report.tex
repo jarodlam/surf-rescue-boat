@@ -56,7 +56,6 @@ A common NMEA sentence type is \texttt{GPRMC}, the GPS recommended minimum. \tex
 \field{<Date>}{Date in DDMMYY format}
 \field{<MagVar>}{Magnetic variation magnitude}
 \field{<MagDir>}{Magnetic variation direction}
-\field{*CS}{Two-digit hexadecimal checksum}
 \end{nmeaspec}
 
 A NMEA sentence parser was written for the SRB to interpret messages from the on-board GPS and extract location information.
@@ -67,24 +66,24 @@ Some advantages of using NMEA sentences are that they are standardised, human-re
 \subsubsection{SRBSM - Status Message}
 The \texttt{SRBSM} sentence is sent periodically by the SRB to update the base station with status information.
 
-\begin{nmeaspec}{\$SRBSM,<ID>,<Lat>,<Lon>,<Speed>,<Heading>,\\<BattV>*CS}
+\begin{nmeaspec}{\$SRBSM,<ID>,<Lat>,<Lon>,<Speed>,<Heading>,\\<BattV>,<FwdPower>,<TgtHeading>*CS}
 \field{<ID>}{ID of target SRB}
 \field{<Lat>}{Latitude in decimal degrees}
 \field{<Lon>}{Longitude in decimal degrees}
 \field{<Speed>}{Speed in metres per second}
 \field{<Heading>}{Compass heading in degrees CW from north}
 \field{<BattV>}{Current battery voltage}
-\field{*CS}{Two-digit hexadecimal checksum}
+\field{<FwdPower>}{Forward power from -100 to 100}
+\field{<TgtHeading>}{Target heading in degrees CW from north}
 \end{nmeaspec}
 
 \subsubsection{SRBJS - Joystick}
 The \texttt{SRBJS} sentence is sent by the base station for manual control of the SRB.
 
-\begin{nmeaspec}{\$SRBJS,<ID>,<Power>,<Heading>*CS}
+\begin{nmeaspec}{\$SRBJS,<ID>,<FwdPower>,<TgtHeading>*CS}
 \field{<ID>}{ID of target SRB}
-\field{<Power>}{Forward power from 0-100}
-\field{<Heading>}{Compass heading in degrees CW from north}
-\field{*CS}{Two-digit hexadecimal checksum}
+\field{<FwdPower>}{Forward power from -100 to 100}
+\field{<TgtHeading>}{Target heading in degrees CW from north}
 \end{nmeaspec}
 
 \bibliography{bibliography}

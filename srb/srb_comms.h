@@ -11,6 +11,7 @@
 
 #include <Arduino.h>
 #include "srb.h"
+#include "Nmea.h"
 
 class SrbComms {
   public:
@@ -18,7 +19,7 @@ class SrbComms {
     /*
      * Initialise NmeaGps with the XBee serial port.
      */
-    SrbComms(Stream *port);
+    SrbComms(Stream *port, SrbStats *stats);
 
     /*
      * Update the values from serial.
@@ -31,9 +32,14 @@ class SrbComms {
     void sendMessage(const char* s);
 
     /*
+     * General function for parsing SRB sentences.
+     */
+    void parseSentence(char *s);
+
+    /*
      * Send SRBSM message
      */
-    void sendSRBSM(SrbStats stats);
+    void sendSRBSM();
     
   private:
     /*
@@ -42,16 +48,21 @@ class SrbComms {
     Stream *_serial;
 
     /*
-     * Buffers for storing I/O data.
+     * Pointer to the stats object given at creation.
      */
-    char _inBuf[COMMS_BUFFER_SIZE];
-    char _outBuf[COMMS_BUFFER_SIZE];
-    void clearBuffer(char *buffer);
+    SrbStats *_stats;
     
     /*
-     * Parse the sentence in the buffer.
+     * Buffers for storing I/O data.
      */
-    void parse_buffer();
+    char _buffer[COMMS_BUFFER_SIZE];
+    unsigned long _bufferClearTime;
+    void clearBuffer();
+
+    /*
+     * Functions for parsing sentences.
+     */
+    void readSRBJS(Nmea *nmea);
 };
 
 #endif
