@@ -7,11 +7,9 @@
 #ifndef nmea_gps_h
 #define nmea_gps_h
 
+#include <Arduino.h>
 #include "srb_comms.h"
 #include "nmea.h"
-#include <Arduino.h>
-
-#define COMMS_TIMEOUT 1000
 
 SrbComms::SrbComms(Stream *port, SrbStats *stats) {
   _serial = port;
@@ -20,12 +18,12 @@ SrbComms::SrbComms(Stream *port, SrbStats *stats) {
 }
 
 void SrbComms::update() {
-  //Serial.println(Serial1.available());
+  
   while (_serial->available()) {
-
+    
     // Read a single character from serial
     char c = _serial->read();
-
+    
     // Clear the buffer if line feed
     if (c == '\n') {
       clearBuffer();
@@ -34,6 +32,11 @@ void SrbComms::update() {
     // Parse the sentence if carriage return
     else if (c == '\r') {
       parseSentence(_buffer);
+      clearBuffer();
+    }
+
+    // Filter out non printable characters
+    else if (!isPrintable(c)) {
       clearBuffer();
     }
     
@@ -47,7 +50,7 @@ void SrbComms::update() {
   }
 
   // Timeout and clear the buffer
-  if (millis() - _bufferClearTime > COMMS_TIMEOUT) {
+  if (millis() - _bufferClearTime > COMMS_BUFFER_TIMEOUT) {
     clearBuffer();
   }
 }
@@ -65,6 +68,7 @@ void SrbComms::parseSentence(char *s) {
   if (!nmea.validate()) {
     Serial.print("Invalid sentence received: ");
     Serial.println(s);
+    return;
   }
 
   // 1. Sentence type
@@ -77,6 +81,7 @@ void SrbComms::parseSentence(char *s) {
     Serial.print("Sentence type '");
     Serial.print(type);
     Serial.println("' not recognised.");
+    return;
   }
 }
 
@@ -90,26 +95,29 @@ void SrbComms::sendSRBSM() {
 
   // 2. SRB ID
   nmea.appendInt(_stats->ID);
+
+  // 3. State
+  nmea.appendFloat(_stats->state, 0);
   
-  // 3. Latitude
+  // 4. Latitude
   nmea.appendFloat(_stats->lat, 5);
   
-  // 4. Longitude
+  // 5. Longitude
   nmea.appendFloat(_stats->lon, 5);
   
-  // 5. Speed
+  // 6. Speed
   nmea.appendFloat(_stats->speed, 1);
 
-  // 6. Heading
+  // 7. Heading
   nmea.appendFloat(_stats->heading, 1);
 
-  // 7. Battery voltage
+  // 8. Battery voltage
   nmea.appendFloat(_stats->battV, 2);
 
-  // 8. Forward power
+  // 9. Forward power
   nmea.appendInt(_stats->forwardPower);
 
-  // 9. Target heading
+  // 10. Target heading
   nmea.appendFloat(_stats->targetHeading, 1);
 
   // Checksum
@@ -132,6 +140,9 @@ void SrbComms::readSRBJS(Nmea *nmea) {
 
   // 4. Heading
   _stats->targetHeading = strtod(nmea->nextField(), NULL);
+
+  // Set state
+  _stats->state = 1;
 }
 
 void SrbComms::clearBuffer() {

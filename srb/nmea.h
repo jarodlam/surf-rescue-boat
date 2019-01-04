@@ -7,7 +7,7 @@
 #ifndef nmea_h
 #define nmea_h
 
-#define NMEA_BUFFER_SIZE 256
+#define NMEA_BUFFER_SIZE 1024
 
 class Nmea {
   public:

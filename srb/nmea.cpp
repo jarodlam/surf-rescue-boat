@@ -52,6 +52,7 @@ void Nmea::append(const char *s) {
 void Nmea::appendInt(int d) {
   char s[16];
   snprintf(s, 16, "%d", d);
+  //dtostrf(d, 0, 0, s);
   append(s);
 }
 

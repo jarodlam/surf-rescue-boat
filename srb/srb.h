@@ -16,6 +16,11 @@ class SrbStats {
      * ID of the SRB, set at start of program
      */
     int ID;
+
+    /*
+     * State where 0=disabled, 1=manual, 2=auto
+     */
+    int state;
   
     /*
      * Current latitude and longitude in decimal degrees

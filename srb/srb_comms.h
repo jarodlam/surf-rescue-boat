@@ -8,6 +8,7 @@
 #define srb_comms_h
 
 #define COMMS_BUFFER_SIZE 1024
+#define COMMS_BUFFER_TIMEOUT 1000
 
 #include <Arduino.h>
 #include "srb.h"
@@ -21,6 +22,10 @@ class SrbComms {
      */
     SrbComms(Stream *port, SrbStats *stats);
 
+    /*
+     * Set the failsafe timeout
+     */
+    
     /*
      * Update the values from serial.
      */
