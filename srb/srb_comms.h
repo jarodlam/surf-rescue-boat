@@ -23,8 +23,10 @@ class SrbComms {
     SrbComms(Stream *port, SrbStats *stats);
 
     /*
-     * Set the failsafe timeout
+     * Set the failsafe timeout in milliseconds.
+     * Run during setup.
      */
+    void setTimeout(int ms);
     
     /*
      * Update the values from serial.
@@ -64,6 +66,12 @@ class SrbComms {
     unsigned long _bufferClearTime;
     void clearBuffer();
 
+    /*
+     * Failsafe timeout length. -1 for disabled.
+     */
+    int _failsafeTimeout = -1;
+    unsigned long _lastRecvMillis = 0;
+    
     /*
      * Functions for parsing sentences.
      */

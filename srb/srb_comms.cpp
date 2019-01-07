@@ -17,9 +17,22 @@ SrbComms::SrbComms(Stream *port, SrbStats *stats) {
   clearBuffer();
 }
 
+void SrbComms::setTimeout(int ms) {
+  _failsafeTimeout = ms;
+}
+
 void SrbComms::update() {
+
+  // Check for failsafe timeout
+  if (_failsafeTimeout > 0 &&
+      _lastRecvMillis + _failsafeTimeout < millis()) {
+    _stats->state = 0;
+  }
   
   while (_serial->available()) {
+    
+    // Update last received time
+    _lastRecvMillis = millis();
     
     // Read a single character from serial
     char c = _serial->read();

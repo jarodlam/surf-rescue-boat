@@ -31,6 +31,9 @@ void setup() {
   wdt_enable(WDTO_2S);
   #endif
 
+  // Set comms failsafe timeout
+  comms.setTimeout(5000);
+  
   // Initialise stats
   stats.ID = 0;
   stats.state = 0;
@@ -41,7 +44,6 @@ void setup() {
   stats.battV = 11.434;
   stats.forwardPower = 0;
   stats.targetHeading = 0;
-
 }
 
 void loop() {
