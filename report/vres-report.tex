@@ -75,6 +75,8 @@ The \texttt{SRBSM} sentence is sent periodically by the SRB to update the base s
 \field{<Heading>}{Compass heading in degrees CW from north}
 \field{<BattV>}{Current battery voltage}
 \field{<FwdPower>}{Forward power from -100 to 100}
+\field{<TgtLat>}{Target latitude in decimal degrees}
+\field{<TgtLon>}{Target longitude in decimal degrees}
 \field{<TgtHeading>}{Target heading in degrees CW from north}
 \end{nmeaspec}
 
@@ -85,6 +87,17 @@ The \texttt{SRBJS} sentence is sent by the base station for manual control of th
 \field{<ID>}{ID of target SRB}
 \field{<FwdPower>}{Forward power from -100 to 100}
 \field{<TgtHeading>}{Target heading in degrees CW from north}
+\end{nmeaspec}
+
+\subsubsection{SRBWP - Waypoint}
+The \texttt{SRBWP} sentence is sent by the base station to autonomously direct the SRB to a set of coordinates.
+
+\begin{nmeaspec}{\$SRBJS,<ID>,<TgtLat>,<TgtLon>,<TgtHeading>,\\<Power>*CS}
+\field{<ID>}{ID of target SRB}
+\field{<TgtLat>}{Target latitude in decimal degrees}
+\field{<TgtLon>}{Target longitude in decimal degrees}
+\field{<TgtHeading>}{Target heading in degrees CW from north}
+\field{<Power>}{Motor power to use from 0-100}
 \end{nmeaspec}
 
 \bibliography{bibliography}

@@ -76,6 +76,7 @@ class SrbComms {
      * Functions for parsing sentences.
      */
     void readSRBJS(Nmea *nmea);
+    void readSRBWP(Nmea *nmea);
 };
 
 #endif

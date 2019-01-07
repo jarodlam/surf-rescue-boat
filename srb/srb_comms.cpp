@@ -90,6 +90,9 @@ void SrbComms::parseSentence(char *s) {
   if (strcmp(type, "SRBJS") == 0) {
     readSRBJS(&nmea);
   }
+  else if (strcmp(type, "SRBWP") == 0) {
+    readSRBWP(&nmea);
+  }
   else {
     Serial.print("Sentence type '");
     Serial.print(type);
@@ -130,7 +133,13 @@ void SrbComms::sendSRBSM() {
   // 9. Forward power
   nmea.appendInt(_stats->forwardPower);
 
-  // 10. Target heading
+  // 10. Target latitude
+  nmea.appendFloat(_stats->targetLat, 5);
+  
+  // 11. Target longitude
+  nmea.appendFloat(_stats->targetLon, 5);
+  
+  // 12. Target heading
   nmea.appendFloat(_stats->targetHeading, 1);
 
   // Checksum
@@ -156,6 +165,31 @@ void SrbComms::readSRBJS(Nmea *nmea) {
 
   // Set state
   _stats->state = 1;
+}
+
+void SrbComms::readSRBWP(Nmea *nmea) {
+  
+  // Check number of fields
+  if (nmea->numFields() != 5) return;
+  
+  // 2. SRB ID, abort if doesn't match
+  int recvID = strtod(nmea->nextField(), NULL);
+  if (recvID != _stats->ID) return;
+
+  // 3. Target latitude
+  _stats->targetLat = strtod(nmea->nextField(), NULL);
+
+  // 4. Target longitude
+  _stats->targetLon = strtod(nmea->nextField(), NULL);
+  
+  // 5. Target heading
+  _stats->targetHeading = strtod(nmea->nextField(), NULL);
+
+  // 6. Power
+  _stats->forwardPower = strtod(nmea->nextField(), NULL);
+  
+  // Set state
+  _stats->state = 2;
 }
 
 void SrbComms::clearBuffer() {
