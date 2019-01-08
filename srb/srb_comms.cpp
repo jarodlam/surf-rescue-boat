@@ -8,8 +8,9 @@
 #include "srb_comms.h"
 #include "nmea.h"
 
-SrbComms::SrbComms(Stream *port, SrbStats *stats) {
+SrbComms::SrbComms(HardwareSerial *port, SrbStats *stats) {
   _serial = port;
+  _serial->begin(9600);
   _stats = stats;
   clearBuffer();
 }
@@ -113,13 +114,13 @@ void SrbComms::sendSRBSM() {
   nmea.appendFloat(_stats->state, 0);
   
   // 4. Latitude
-  nmea.appendFloat(_stats->lat, 5);
+  nmea.appendFloat(_stats->lat, 6);
   
   // 5. Longitude
-  nmea.appendFloat(_stats->lon, 5);
+  nmea.appendFloat(_stats->lon, 6);
   
   // 6. Speed
-  nmea.appendFloat(_stats->speed, 1);
+  nmea.appendFloat(_stats->speed, 2);
 
   // 7. Heading
   nmea.appendFloat(_stats->heading, 1);
@@ -131,10 +132,10 @@ void SrbComms::sendSRBSM() {
   nmea.appendInt(_stats->forwardPower);
 
   // 10. Target latitude
-  nmea.appendFloat(_stats->targetLat, 5);
+  nmea.appendFloat(_stats->targetLat, 6);
   
   // 11. Target longitude
-  nmea.appendFloat(_stats->targetLon, 5);
+  nmea.appendFloat(_stats->targetLon, 6);
   
   // 12. Target heading
   nmea.appendFloat(_stats->targetHeading, 1);

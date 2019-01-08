@@ -20,44 +20,49 @@ class SrbStats {
     /*
      * State where 0=disabled, 1=manual, 2=auto
      */
-    int state;
+    int state = 0;
+
+    /*
+     * Boolean GPS fix flag
+     */
+    int gpsFix = 0;
   
     /*
      * Current latitude and longitude in decimal degrees
      */
-    float lat;
-    float lon;
+    float lat = 0;
+    float lon = 0;
 
     /*
      * Current ground speed in m/s
      */
-    float speed;
+    float speed = 0;
     
     /*
      * Current compass heading in degrees from north
      */
-    float heading;
+    float heading = 0;
 
     /*
      * Current battery voltage
      */
-    float battV;
+    float battV = 0;
 
     /*
      * Forward power percentage (-100-100 manual, 0-100 auto)
      */
-    int forwardPower;
+    int forwardPower = 0;
 
     /*
      * Target compass heading in degrees from north
      */
-    float targetHeading;
+    float targetHeading = 0;
 
     /*
      * Target lat/lon in decimal degrees
      */
-    float targetLat;
-    float targetLon;
+    float targetLat = 0;
+    float targetLon = 0;
 };
 
 #endif

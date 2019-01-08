@@ -11,20 +11,18 @@
 #include "nmea_gps.h"
 
 #define USE_WATCHDOG
-
 #define LOOP_DELAY 100
 
 unsigned long prevMillis = 0;
 
 SrbStats stats;
 SrbComms comms(&Serial1, &stats);
-NmeaGps gps(&Serial);
+NmeaGps gps(&Serial2, &stats);
 
 void setup() {
   
-  // Start serial
+  // Start USB serial
   Serial.begin(9600);
-  Serial1.begin(9600);
   
   // Start watchdog
   #ifdef USE_WATCHDOG

@@ -8,6 +8,7 @@
 #define nmea_gps_h
 
 #include <Arduino.h>
+#include "srb.h"
 
 #define GPS_BUFFER_SIZE 256
 #define GPS_TIMEOUT 1000
@@ -18,7 +19,7 @@ class NmeaGps {
     /*
      * Initialise NmeaGps with the GPS serial port.
      */
-    NmeaGps(Stream *port);
+    NmeaGps(HardwareSerial *port, SrbStats *stats);
 
     /*
      * Update the values from serial.
@@ -37,13 +38,18 @@ class NmeaGps {
     /*
      * Pointer to the GPS serial port object.
      */
-    Stream *_serial;
+    HardwareSerial *_serial;
+
+    /*
+     * Pointer to the stats object given at creation.
+     */
+    SrbStats *_stats;
 
     /*
      * Buffer for storing incoming data.
      */
     char _buffer[GPS_BUFFER_SIZE];
-    void clear_buffer();
+    void _clear_buffer();
     
     /*
      * GPS location in decimal degrees.
@@ -67,19 +73,19 @@ class NmeaGps {
     /*
      * Parse the sentence in the buffer.
      */
-    void parse_buffer();
+    void _parse_buffer();
 
     /*
      * Convert NMEA lat/lon string to decimal degrees.
      * 
      * "degLen" is number of degrees digits (2 for lat, 3 for lon).
      */
-    float degToDec(const char *s, int degLen);
+    float _degToDec(const char *s, int degLen);
 
     /*
      * Convert knots string to m/s.
      */
-    float knotsToMps(const char *s);
+    float _knotsToMps(const char *s);
 
     /*
      * Milliseconds since the buffer was last cleared.
