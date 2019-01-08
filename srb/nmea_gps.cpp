@@ -1,5 +1,5 @@
 /*
-   nmea_gps.h
+   nmea_gps.cpp
    Receive and parse GPS NMEA strings
    Written by Jarod Lam
 */

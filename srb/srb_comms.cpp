@@ -1,11 +1,8 @@
 /*
-   srb_comms.h
+   srb_comms.cpp
    Communication functions for SRB
    Written by Jarod Lam
 */
-
-#ifndef nmea_gps_h
-#define nmea_gps_h
 
 #include <Arduino.h>
 #include "srb_comms.h"
@@ -197,4 +194,3 @@ void SrbComms::clearBuffer() {
   _bufferClearTime = millis();
 }
 
-#endif
