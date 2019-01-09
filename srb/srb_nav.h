@@ -39,9 +39,15 @@ class SrbNav {
     /*
      * Navigation functions.
      */
-    void navDisabled();
-    void navAuto();
-    void navManual();
+    void _navDisabled();
+    void _navAuto();
+    void _navManual();
+
+    /*
+     * Get the difference between target and current heading
+     */
+    int _headingDiff(int goalDirection, int currentHeading);
+
 };
 
 

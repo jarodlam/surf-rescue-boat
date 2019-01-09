@@ -23,7 +23,7 @@ class SrbMotor {
     /*
      * Initialise the servo objects, call in setup()
      */
-    void begin(int pins[]);
+    void begin(int pins[], int sides[]);
 
    /*
     * Set power for specified motor
@@ -35,12 +35,27 @@ class SrbMotor {
     */
    void stopAll();
 
+   /*
+    * Return number of motors
+    */
+   int numMotors();
+
+   /*
+    * Return the side of the SRB the motor is on (0=left, 1=right)
+    */
+   int motorSide(int motorNo);
+
   private:
 
     /*
      * Servos
      */
     Servo _motors[NUM_MOTORS];
+
+    /*
+     * Motor sides
+     */
+    int _motorSides[NUM_MOTORS];
 
 };
 

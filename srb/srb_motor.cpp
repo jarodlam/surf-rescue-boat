@@ -9,12 +9,13 @@
 #include <Servo.h>
 #include <stdlib.h>
 
-void SrbMotor::begin(int pins[]) {
+void SrbMotor::begin(int pins[], int sides[]) {
   
   // Attach motors to their pins
   for (int i = 0; i < NUM_MOTORS; i++) {
     _motors[i].attach(pins[i], 1000, 2000);
     setPower(i, 0);
+    _motorSides[i] = sides[i];
   }
   
 }
@@ -40,4 +41,15 @@ void SrbMotor::stopAll() {
   
 }
 
+int SrbMotor::numMotors() {
+
+  return NUM_MOTORS;
+  
+}
+
+int SrbMotor::motorSide(int motorNo) {
+
+  return _motorSides[motorNo];
+  
+}
 

@@ -16,7 +16,8 @@
 #define LOOP_DELAY 100
 
 unsigned long prevMillis = 0;
-int motorPins[] = {2, 3};
+int motorPins[]  = {2, 3};
+int motorSides[] = {0, 1};  // 0=left, 1=right
 
 SrbStats stats;
 SrbMotor motors;
@@ -35,7 +36,7 @@ void setup() {
   Serial.begin(9600);
   
   // Initialise motors
-  motors.begin(motorPins);
+  motors.begin(motorPins, motorSides);
 
   // Set comms failsafe timeout
   comms.setTimeout(5000);
