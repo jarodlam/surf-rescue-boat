@@ -20,7 +20,7 @@ class SrbComms {
     /*
      * Initialise NmeaGps with the XBee serial port.
      */
-    SrbComms(HardwareSerial *port, SrbStats *stats);
+    SrbComms(SrbStats *stats, HardwareSerial *port);
 
     /*
      * Set the failsafe timeout in milliseconds.

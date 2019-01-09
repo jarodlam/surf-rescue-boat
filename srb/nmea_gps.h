@@ -19,7 +19,7 @@ class NmeaGps {
     /*
      * Initialise NmeaGps with the GPS serial port.
      */
-    NmeaGps(HardwareSerial *port, SrbStats *stats);
+    NmeaGps(SrbStats *stats, HardwareSerial *port);
 
     /*
      * Update the values from serial.

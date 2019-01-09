@@ -8,7 +8,7 @@
 #include "srb_comms.h"
 #include "nmea.h"
 
-SrbComms::SrbComms(HardwareSerial *port, SrbStats *stats) {
+SrbComms::SrbComms(SrbStats *stats, HardwareSerial *port) {
   _serial = port;
   _serial->begin(9600);
   _stats = stats;

@@ -7,6 +7,8 @@
 #include <avr/wdt.h>
 #include "srb.h"
 #include "srb_comms.h"
+#include "srb_motor.h"
+#include "srb_nav.h"
 #include "nmea.h"
 #include "nmea_gps.h"
 
@@ -14,20 +16,26 @@
 #define LOOP_DELAY 100
 
 unsigned long prevMillis = 0;
+int motorPins[] = {2, 3};
 
 SrbStats stats;
-SrbComms comms(&Serial1, &stats);
-NmeaGps gps(&Serial2, &stats);
+SrbMotor motors;
+SrbComms comms(&stats, &Serial1);
+NmeaGps gps(&stats, &Serial2);
+SrbNav nav(&stats, &motors);
 
 void setup() {
-  
-  // Start USB serial
-  Serial.begin(9600);
   
   // Start watchdog
   #ifdef USE_WATCHDOG
   wdt_enable(WDTO_2S);
   #endif
+  
+  // Start USB serial
+  Serial.begin(9600);
+  
+  // Initialise motors
+  motors.begin(motorPins);
 
   // Set comms failsafe timeout
   comms.setTimeout(5000);
@@ -42,6 +50,7 @@ void setup() {
   stats.battV = 11.434;
   stats.forwardPower = 0;
   stats.targetHeading = 0;
+  
 }
 
 void loop() {
@@ -54,6 +63,9 @@ void loop() {
   // Update serial from GPS and XBee
   gps.update();
   comms.update();
+
+  motors.setPower(0, -100);
+  motors.setPower(1, 100);
 
   // Non-blocking loop delay
   if (millis() >= prevMillis+LOOP_DELAY) {

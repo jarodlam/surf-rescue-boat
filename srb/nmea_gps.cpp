@@ -10,7 +10,7 @@
 #include <Arduino.h>
 #include <Time.h>
 
-NmeaGps::NmeaGps(HardwareSerial *port, SrbStats *stats) {
+NmeaGps::NmeaGps(SrbStats *stats, HardwareSerial *port) {
   
   // Start serial
   _serial = port;

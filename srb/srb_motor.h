@@ -9,23 +9,39 @@
 
 #include <Servo.h>
 
+// Number of servos
+#define NUM_MOTORS 2
+
+// Pulse width min and max for motor signals
+#define SRB_SERVO_MIN 1000
+#define SRB_SERVO_MAX 2000
+
 class SrbMotor {
 
   public:
 
     /*
-     * Initialise the servo objects
+     * Initialise the servo objects, call in setup()
      */
-    SrbMotor();
+    void begin(int pins[]);
+
+   /*
+    * Set power for specified motor
+    */
+   void setPower(int motorNo, int power);
+
+   /*
+    * Stop all motors
+    */
+   void stopAll();
 
   private:
 
     /*
      * Servos
      */
-    Servo _motor1;
-    Servo _motor2;
+    Servo _motors[NUM_MOTORS];
 
-}
+};
 
 #endif

@@ -8,6 +8,7 @@
 #define srb_nav_h
 
 #include "srb.h"
+#include "srb_motor.h"
 
 class SrbNav {
   
@@ -16,7 +17,7 @@ class SrbNav {
     /*
      * Intialise navigation with stats object.
      */
-    SrbNav(SrbStats *stats);
+    SrbNav(SrbStats *stats, SrbMotor *motors);
 
     /*
      * Update function called every loop.
@@ -29,6 +30,11 @@ class SrbNav {
      * Pointer to the stats object given at creation.
      */
     SrbStats *_stats;
+
+    /*
+     * 
+     */
+    SrbMotor *_motors;
 
     /*
      * Navigation functions.

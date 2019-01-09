@@ -5,10 +5,12 @@
 */
 
 #include "srb.h"
+#include "srb_motor.h"
 #include "srb_nav.h"
 
-SrbNav::SrbNav(SrbStats *stats) {
+SrbNav::SrbNav(SrbStats *stats, SrbMotor *motors) {
   _stats = stats;
+  _motors = motors;
 }
 
 void SrbNav::update() {
@@ -23,7 +25,7 @@ void SrbNav::update() {
 }
 
 void SrbNav::navDisabled() {
-  
+  _motors->stopAll();
 }
 
 void SrbNav::navManual() {
