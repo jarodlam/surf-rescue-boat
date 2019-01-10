@@ -8,6 +8,7 @@
 #include "srb_motor.h"
 #include "srb_nav.h"
 #include <Arduino.h>
+#include <math.h>
 
 SrbNav::SrbNav(SrbStats *stats, SrbMotor *motors) {
   _stats = stats;
@@ -33,30 +34,7 @@ void SrbNav::_navDisabled() {
 
 void SrbNav::_navManual() {
 
-  // Calculate distance from heading
-  int dHead = _headingDiff(_stats->targetHeading, _stats->heading);
-
-  // Set left and right motor power to forward power
-  int powerL = _stats->forwardPower;
-  int powerR = _stats->forwardPower * -1;
-  
-  // Add heading rotation to each of the motors
-  powerL += dHead;
-  powerR += dHead;
-
-  // Normalise 
-  float normFact = _normaliseFactor(powerL, powerR, 100);
-  powerL *= normFact;
-  powerR *= normFact;
-
-  // Turn motors
-  _motors->setSidePower(LEFT,  powerL);
-  _motors->setSidePower(RIGHT, powerR);
-
-  /*Serial.print(powerL);
-  Serial.print(" ");
-  Serial.print(powerR);
-  Serial.println();*/
+  _moveTo(_stats->forwardPower, _stats->targetHeading);
   
 }
 
@@ -65,6 +43,12 @@ void SrbNav::_navAuto() {
   // Calculate distance from goal
   float dLat = _stats->targetLat - _stats->lat;
   float dLon = _stats->targetLon - _stats->lon;
+
+  // Get target heading of goal
+  int tHead = atan2(dLat, dLon);
+
+  // Move
+  _moveTo(_stats->forwardPower, tHead);
   
 }
 
@@ -96,6 +80,30 @@ float SrbNav::_normaliseFactor(int val1, int val2, int bound) {
   } else {
     return 1;
   }
+  
+}
+
+void SrbNav::_moveTo(int power, int tHeading) {
+
+  // Calculate distance from heading
+  int dHead = _headingDiff(tHeading, _stats->heading);
+
+  // Set left and right motor power to forward power
+  int powerL = power;
+  int powerR = power * -1;
+  
+  // Add heading rotation to each of the motors
+  powerL += dHead;
+  powerR += dHead;
+
+  // Normalise 
+  float normFact = _normaliseFactor(powerL, powerR, 100);
+  powerL *= normFact;
+  powerR *= normFact;
+
+  // Turn motors
+  _motors->setSidePower(LEFT,  powerL);
+  _motors->setSidePower(RIGHT, powerR);
   
 }
 

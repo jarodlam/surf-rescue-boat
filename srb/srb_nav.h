@@ -51,7 +51,12 @@ class SrbNav {
     /*
      * Get a multiplier to scale down values within -bound and bound
      */
-    float SrbNav::_normaliseFactor(int val1, int val2, int bound);
+    float _normaliseFactor(int val1, int val2, int bound);
+
+    /*
+     * Send the SRB in a particular direction with a particular power
+     */
+    void _moveTo(int power, int tHeading);
 
 };
 
