@@ -14,6 +14,9 @@
 #define SRB_SERVO_MIN 1000
 #define SRB_SERVO_MAX 2000
 
+// Motor acceleration in power percentage points per second
+#define MOTOR_ACCEL 100
+
 class SrbMotor {
 
   public:
@@ -23,36 +26,41 @@ class SrbMotor {
      */
     void begin(int pins[], int sides[]);
 
-   /*
-    * Set power for specified motor
-    */
-   void setPower(int motorNo, int power);
+    /*
+     * Update motors every tick
+     */
+    void update();
+    
+    /*
+     * Set power for specified motor
+     */
+    void setPower(int motorNo, float power);
 
-   /*
-    * Set power for specified side of motors
-    */
-   void setSidePower(int side, int power);
+    /*
+     * Set power for specified side of motors
+     */
+    void setSidePower(int side, float power);
 
-   /*
-    * Set power for all left/right motors
-    */
-   void setLeft(int power);
-   void setRight(int power);
+    /*
+     * Set power for all left/right motors
+     */
+    void setLeft(int power);
+    void setRight(int power);
 
-   /*
-    * Stop all motors
-    */
-   void stopAll();
+    /*
+     * Stop all motors
+     */
+    void stopAll();
 
-   /*
-    * Return number of motors
-    */
-   int count();
+    /*
+     * Return number of motors
+     */
+    int count();
 
-   /*
-    * Return the side of the SRB the motor is on (0=left, 1=right)
-    */
-   int side(int motorNo);
+    /*
+     * Return the side of the SRB the motor is on (0=left, 1=right)
+     */
+    int side(int motorNo);
 
   private:
 
@@ -66,6 +74,22 @@ class SrbMotor {
      */
     int _motorSides[NUM_MOTORS];
 
+    /*
+     * Motor target powers
+     */
+    float _currentPowers[NUM_MOTORS];
+    int _targetPowers[NUM_MOTORS];
+
+    /*
+     * Milliseconds since last update
+     */
+    unsigned long _lastMillis;
+
+    /*
+     * Directly set speed of motor
+     */
+    void _setMotor(int motorNo, float power);
+    
 };
 
 #endif

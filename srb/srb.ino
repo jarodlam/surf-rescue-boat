@@ -65,6 +65,7 @@ void loop() {
   gps.update();
   comms.update();
   nav.update();
+  motors.update();
 
   // Non-blocking loop delay
   if (millis() >= prevMillis+LOOP_DELAY) {

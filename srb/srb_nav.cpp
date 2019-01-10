@@ -18,8 +18,8 @@ void SrbNav::update() {
 
   // Check the SRB status and run corresponding function
   switch(_stats->state) {
-    case 1: _navManual();
-    case 2: _navAuto();
+    case 1: _navManual(); break;
+    case 2: _navAuto();   break;
     default: _navDisabled();
   }
     
@@ -35,7 +35,6 @@ void SrbNav::_navManual() {
 
   // Calculate distance from heading
   int dHead = _headingDiff(_stats->targetHeading, _stats->heading);
-  Serial.println(dHead);
 
   // Set left and right motor power to forward power
   int powerL = _stats->forwardPower;
@@ -54,10 +53,10 @@ void SrbNav::_navManual() {
   _motors->setSidePower(LEFT,  powerL);
   _motors->setSidePower(RIGHT, powerR);
 
-  Serial.print(powerL);
+  /*Serial.print(powerL);
   Serial.print(" ");
   Serial.print(powerR);
-  Serial.println();
+  Serial.println();*/
   
 }
 
