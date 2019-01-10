@@ -35,8 +35,29 @@ void SrbNav::_navManual() {
 
   // Calculate distance from heading
   int dHead = _headingDiff(_stats->targetHeading, _stats->heading);
+  Serial.println(dHead);
 
-  // 
+  // Set left and right motor power to forward power
+  int powerL = _stats->forwardPower;
+  int powerR = _stats->forwardPower * -1;
+  
+  // Add heading rotation to each of the motors
+  powerL += dHead;
+  powerR += dHead;
+
+  // Normalise 
+  float normFact = _normaliseFactor(powerL, powerR, 100);
+  powerL *= normFact;
+  powerR *= normFact;
+
+  // Turn motors
+  _motors->setSidePower(LEFT,  powerL);
+  _motors->setSidePower(RIGHT, powerR);
+
+  Serial.print(powerL);
+  Serial.print(" ");
+  Serial.print(powerR);
+  Serial.println();
   
 }
 
@@ -61,6 +82,20 @@ int SrbNav::_headingDiff(int goalDirection, int currentHeading) {
     return smallest * -1; //clockwise
   } else {
      return smallest; 
+  }
+  
+}
+
+float SrbNav::_normaliseFactor(int val1, int val2, int bound) {
+
+  val1 = abs(val1);
+  val2 = abs(val2);
+  int maxVal = max(val1, val2);
+
+  if (maxVal > bound) {
+    return (float)bound / (float)maxVal;
+  } else {
+    return 1;
   }
   
 }

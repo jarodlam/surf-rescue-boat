@@ -17,7 +17,7 @@
 
 unsigned long prevMillis = 0;
 int motorPins[]  = {2, 3};
-int motorSides[] = {0, 1};  // 0=left, 1=right
+int motorSides[] = {LEFT, RIGHT};
 
 SrbStats stats;
 SrbMotor motors;
@@ -64,9 +64,7 @@ void loop() {
   // Update serial from GPS and XBee
   gps.update();
   comms.update();
-
-  motors.setPower(0, -100);
-  motors.setPower(1, 100);
+  nav.update();
 
   // Non-blocking loop delay
   if (millis() >= prevMillis+LOOP_DELAY) {

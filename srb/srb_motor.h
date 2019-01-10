@@ -7,10 +7,8 @@
 #ifndef srb_motor_h
 #define srb_motor_h
 
+#include "srb.h"
 #include <Servo.h>
-
-// Number of servos
-#define NUM_MOTORS 2
 
 // Pulse width min and max for motor signals
 #define SRB_SERVO_MIN 1000
@@ -31,6 +29,17 @@ class SrbMotor {
    void setPower(int motorNo, int power);
 
    /*
+    * Set power for specified side of motors
+    */
+   void setSidePower(int side, int power);
+
+   /*
+    * Set power for all left/right motors
+    */
+   void setLeft(int power);
+   void setRight(int power);
+
+   /*
     * Stop all motors
     */
    void stopAll();
@@ -38,12 +47,12 @@ class SrbMotor {
    /*
     * Return number of motors
     */
-   int numMotors();
+   int count();
 
    /*
     * Return the side of the SRB the motor is on (0=left, 1=right)
     */
-   int motorSide(int motorNo);
+   int side(int motorNo);
 
   private:
 

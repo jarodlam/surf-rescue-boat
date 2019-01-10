@@ -7,6 +7,13 @@
 #ifndef srb_h
 #define srb_h
 
+// Number of servos
+#define NUM_MOTORS 2
+
+// Left and right motor names
+#define LEFT 0
+#define RIGHT 1
+
 // Class containing current stats of SRB
 class SrbStats {
   

@@ -32,7 +32,7 @@ class SrbNav {
     SrbStats *_stats;
 
     /*
-     * 
+     * Pointer to the motors object given at creation.
      */
     SrbMotor *_motors;
 
@@ -47,6 +47,11 @@ class SrbNav {
      * Get the difference between target and current heading
      */
     int _headingDiff(int goalDirection, int currentHeading);
+
+    /*
+     * Get a multiplier to scale down values within -bound and bound
+     */
+    float SrbNav::_normaliseFactor(int val1, int val2, int bound);
 
 };
 

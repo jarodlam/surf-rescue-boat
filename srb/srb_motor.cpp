@@ -5,6 +5,7 @@
 */
 
 #include "srb_motor.h"
+#include "srb.h"
 #include <Arduino.h>
 #include <Servo.h>
 #include <stdlib.h>
@@ -33,6 +34,16 @@ void SrbMotor::setPower(int motorNo, int power) {
   
 }
 
+void SrbMotor::setSidePower(int side, int power) {
+
+  for (int i = 0; i < NUM_MOTORS; i++) {
+    if (_motorSides[i] == side) {
+      setPower(i, power);
+    }
+  }
+  
+}
+
 void SrbMotor::stopAll() {
 
   for (int i = 0; i < NUM_MOTORS; i++) {
@@ -41,13 +52,13 @@ void SrbMotor::stopAll() {
   
 }
 
-int SrbMotor::numMotors() {
+int SrbMotor::count() {
 
   return NUM_MOTORS;
   
 }
 
-int SrbMotor::motorSide(int motorNo) {
+int SrbMotor::side(int motorNo) {
 
   return _motorSides[motorNo];
   
