@@ -14,6 +14,9 @@
 #define LEFT 0
 #define RIGHT 1
 
+// Comms failsafe timeout
+//#define COMMS_TIMEOUT
+
 // Class containing current stats of SRB
 class SrbStats {
   

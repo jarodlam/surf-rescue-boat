@@ -44,8 +44,10 @@ void SrbNav::_navAuto() {
   float dLat = _stats->targetLat - _stats->lat;
   float dLon = _stats->targetLon - _stats->lon;
 
-  // Get target heading of goal
-  int tHead = atan2(dLat, dLon);
+  // Get target heading of goal (convert to deg)
+  int tHead = atan2(dLat, dLon) * 57.29578;
+
+  Serial.println(atan2(dLat, dLon));
 
   // Move
   _moveTo(_stats->forwardPower, tHead);
