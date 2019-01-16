@@ -71,41 +71,41 @@ int SrbNav::_headingDiff(int goalDirection, int currentHeading) {
   
 }
 
-float SrbNav::_normaliseFactor(int val1, int val2, int bound) {
-
-  val1 = abs(val1);
-  val2 = abs(val2);
-  int maxVal = max(val1, val2);
-
-  if (maxVal > bound) {
-    return (float)bound / (float)maxVal;
-  } else {
-    return 1;
-  }
-  
-}
-
 void SrbNav::_moveTo(int power, int tHeading) {
 
   // Calculate distance from heading
   int dHead = _headingDiff(tHeading, _stats->heading);
+  Serial.print(dHead);
+  Serial.print(" ");
 
-  // Set left and right motor power to forward power
+  // Set motor speeds
   int powerL = power;
-  int powerR = power * -1;
-  
-  // Add heading rotation to each of the motors
-  powerL += dHead;
-  powerR += dHead;
+  int powerR = power;
 
-  // Normalise 
-  float normFact = _normaliseFactor(powerL, powerR, 100);
-  powerL *= normFact;
-  powerR *= normFact;
+  // Scale motors by heading rotation
+  if (dHead < 0) {
+    powerR *= _turnMultiplier(dHead);
+  } else {
+    powerL *= _turnMultiplier(dHead);
+  }
 
   // Turn motors
   _motors->setSidePower(LEFT,  powerL);
-  _motors->setSidePower(RIGHT, powerR);
+  _motors->setSidePower(RIGHT, -powerR);
+  
+}
+
+float SrbNav::_turnMultiplier(int dHead) {
+
+  if (dHead < 0) dHead *= -1;
+  dHead = constrain(dHead, 0, 180);
+
+  // Scale according to the function y = (1/90)x + 1
+  float multiplier = -(1.0 / 90.0) * dHead + 1;
+  Serial.print(multiplier);
+  Serial.print(" ");
+
+  return multiplier;
   
 }
 

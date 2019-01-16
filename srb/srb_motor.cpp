@@ -32,11 +32,8 @@ void SrbMotor::update() {
 
   // Check each motor if they need accelerating
   for (int i = 0; i < NUM_MOTORS; i++) {
-Serial.print(_motors[i].read());
-Serial.print(" ");
+
     float dp = _targetPowers[i] - _currentPowers[i];
-//Serial.print(dp);
-//Serial.print(" ");
     
     if (dp == 0) {
       continue;
@@ -50,7 +47,7 @@ Serial.print(" ");
       _setMotor(i, newPower);
     }
     
-  }Serial.println();
+  }
   
 }
 

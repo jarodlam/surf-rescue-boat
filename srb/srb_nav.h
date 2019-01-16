@@ -49,14 +49,14 @@ class SrbNav {
     int _headingDiff(int goalDirection, int currentHeading);
 
     /*
-     * Get a multiplier to scale down values within -bound and bound
-     */
-    float _normaliseFactor(int val1, int val2, int bound);
-
-    /*
      * Send the SRB in a particular direction with a particular power
      */
     void _moveTo(int power, int tHeading);
+
+    /*
+     * Calculate a multiplier used to scale motor power according to heading offset
+     */
+    float _turnMultiplier(int dHead);
 
 };
 
