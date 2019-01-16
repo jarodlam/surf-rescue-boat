@@ -27,11 +27,15 @@
 \maketitle
 
 \begin{abstract}
-Make boat that saves people
+build boat
 \end{abstract}
 
 \section{Introduction}
+Visiting the beach with family and friends is a favourite pastime of many, but things can quickly turn ugly when the surf becomes rough or a treacherous rip manifests itself. Surf life savers regularly patrol popular beaches to help those in need, but there is still a limit to the speed and ability of a human swimmer.
 
+To supplement the activities of surf life savers at public beaches, a system has been proposed that will allow timely help to be given to people in need while they wait to be rescued. The surf rescue boat (SRB) aims to not only deliver help quickly, but also reduce the risk to which life savers are exposed.
+
+A simple water-based robot such as the one proposed can be constructed relatively cheaply and easily with off-the-shelf components. In the future, systems such as these may become widely available and save the lives of many along our coastal beaches.
 
 \section{System overview}
 
@@ -92,13 +96,13 @@ The \texttt{SRBJS} sentence is sent by the base station for manual control of th
 \subsubsection{SRBWP - Waypoint}
 The \texttt{SRBWP} sentence is sent by the base station to autonomously direct the SRB to a set of coordinates.
 
-\begin{nmeaspec}{\$SRBJS,<ID>,<TgtLat>,<TgtLon>,<TgtHeading>,\\<Power>*CS}
+\begin{nmeaspec}{\$SRBJS,<ID>,<TgtLat>,<TgtLon>*CS}
 \field{<ID>}{ID of target SRB}
 \field{<TgtLat>}{Target latitude in decimal degrees}
 \field{<TgtLon>}{Target longitude in decimal degrees}
-\field{<TgtHeading>}{Target heading in degrees CW from north}
-\field{<Power>}{Motor power to use from 0-100}
 \end{nmeaspec}
+
+\section{Further development}
 
 \bibliography{bibliography}
 \bibliographystyle{IEEEtran}

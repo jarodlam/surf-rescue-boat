@@ -171,7 +171,7 @@ void SrbComms::readSRBJS(Nmea *nmea) {
 void SrbComms::readSRBWP(Nmea *nmea) {
   
   // Check number of fields
-  if (nmea->numFields() != 5) return;
+  if (nmea->numFields() != 3) return;
   
   // 2. SRB ID, abort if doesn't match
   int recvID = strtod(nmea->nextField(), NULL);
@@ -182,12 +182,6 @@ void SrbComms::readSRBWP(Nmea *nmea) {
 
   // 4. Target longitude
   _stats->targetLon = strtod(nmea->nextField(), NULL);
-  
-  // 5. Target heading
-  _stats->targetHeading = strtod(nmea->nextField(), NULL);
-
-  // 6. Power
-  _stats->forwardPower = strtod(nmea->nextField(), NULL);
   
   // Set state
   _stats->state = 2;
