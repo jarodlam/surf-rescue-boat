@@ -21,13 +21,11 @@ void SrbComms::setTimeout(int ms) {
 
 void SrbComms::update() {
 
-  #ifdef COMMS_TIMEOUT
   // Check for failsafe timeout
   if (_failsafeTimeout > 0 &&
       _lastRecvMillis + _failsafeTimeout < millis()) {
     _stats->state = 0;
   }
-  #endif
   
   while (_serial->available()) {
     

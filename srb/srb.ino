@@ -9,7 +9,6 @@
 #include "srb_comms.h"
 #include "srb_motor.h"
 #include "srb_nav.h"
-#include "nmea.h"
 #include "nmea_gps.h"
 
 #define USE_WATCHDOG
@@ -39,7 +38,7 @@ void setup() {
   motors.begin(motorPins, motorSides);
 
   // Set comms failsafe timeout
-  comms.setTimeout(5000);
+  comms.setTimeout(-1);
   
   // Initialise stats
   stats.ID = 0;
@@ -61,11 +60,11 @@ void loop() {
   wdt_reset();
   #endif
   
-  // Update serial from GPS and XBee
-  gps.update();
-  comms.update();
-  nav.update();
-  motors.update();
+  // Call update functions for everything!
+  gps.update();      // Check GPS serial
+  comms.update();    // Check XBee serial
+  nav.update();      // Calculate nav based on new position/target
+  motors.update();   // Accelerate motors to speeds set by nav
 
   // Non-blocking loop delay
   if (millis() >= prevMillis+LOOP_DELAY) {
