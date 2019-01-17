@@ -7,18 +7,16 @@
 #ifndef srb_comms_h
 #define srb_comms_h
 
-#define COMMS_BUFFER_SIZE 1024
-#define COMMS_BUFFER_TIMEOUT 1000
-
 #include <Arduino.h>
 #include "srb.h"
 #include "Nmea.h"
+#include "srb_serial.h"
 
-class SrbComms {
+class SrbComms : public SrbSerial {
   public:
 
     /*
-     * Initialise NmeaGps with the XBee serial port.
+     * Initialise SrbGps with the XBee serial port.
      */
     SrbComms(SrbStats *stats, HardwareSerial *port);
 
@@ -49,23 +47,12 @@ class SrbComms {
     void sendSRBSM();
     
   private:
-    /*
-     * Pointer to the XBee serial port object.
-     */
-    HardwareSerial *_serial;
 
     /*
-     * Pointer to the stats object given at creation.
+     * Parse contents of buffer.
      */
-    SrbStats *_stats;
+    void _parseBuffer();
     
-    /*
-     * Buffers for storing I/O data.
-     */
-    char _buffer[COMMS_BUFFER_SIZE];
-    unsigned long _bufferClearTime;
-    void clearBuffer();
-
     /*
      * Failsafe timeout length. -1 for disabled.
      */
@@ -75,8 +62,8 @@ class SrbComms {
     /*
      * Functions for parsing sentences.
      */
-    void readSRBJS(Nmea *nmea);
-    void readSRBWP(Nmea *nmea);
+    void _readSRBJS(Nmea *nmea);
+    void _readSRBWP(Nmea *nmea);
 };
 
 #endif

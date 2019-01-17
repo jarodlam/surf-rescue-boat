@@ -8,11 +8,10 @@
 #include "srb_comms.h"
 #include "nmea.h"
 
-SrbComms::SrbComms(SrbStats *stats, HardwareSerial *port) {
-  _serial = port;
+SrbComms::SrbComms(SrbStats *stats, HardwareSerial *port) : SrbSerial(stats, port) {
+
   _serial->begin(9600);
-  _stats = stats;
-  clearBuffer();
+  
 }
 
 void SrbComms::setTimeout(int ms) {
@@ -26,49 +25,17 @@ void SrbComms::update() {
       _lastRecvMillis + _failsafeTimeout < millis()) {
     _stats->state = 0;
   }
-  
-  while (_serial->available()) {
-    
-    // Update last received time
-    _lastRecvMillis = millis();
-    
-    // Read a single character from serial
-    char c = _serial->read();
-    
-    // Clear the buffer if line feed
-    if (c == '\n') {
-      clearBuffer();
-    }
-    
-    // Parse the sentence if carriage return
-    else if (c == '\r') {
-      parseSentence(_buffer);
-      clearBuffer();
-    }
 
-    // Filter out non printable characters
-    else if (!isPrintable(c)) {
-      clearBuffer();
-    }
-    
-    // Else, add character to the buffer
-    else {
-      if (strlen(_buffer) >= COMMS_BUFFER_SIZE) {
-        clearBuffer();
-      }
-      strncat(_buffer, &c, 1);
-    }
-  }
-
-  // Timeout and clear the buffer
-  if (millis() - _bufferClearTime > COMMS_BUFFER_TIMEOUT) {
-    clearBuffer();
-  }
+  _updateSerial();
   
 }
 
 void SrbComms::sendMessage(const char* s) {
   _serial->println(s);
+}
+
+void SrbComms::_parseBuffer() {
+  parseSentence(_buffer);
 }
 
 void SrbComms::parseSentence(char *s) {
@@ -87,10 +54,10 @@ void SrbComms::parseSentence(char *s) {
   const char *type = nmea.nextField();
 
   if (strcmp(type, "SRBJS") == 0) {
-    readSRBJS(&nmea);
+    _readSRBJS(&nmea);
   }
   else if (strcmp(type, "SRBWP") == 0) {
-    readSRBWP(&nmea);
+    _readSRBWP(&nmea);
   }
   else {
     Serial.print("Sentence type '");
@@ -148,7 +115,7 @@ void SrbComms::sendSRBSM() {
   sendMessage(nmea.read());
 }
 
-void SrbComms::readSRBJS(Nmea *nmea) {
+void SrbComms::_readSRBJS(Nmea *nmea) {
   // Check number of fields
   if (nmea->numFields() != 3) return;
   
@@ -166,7 +133,7 @@ void SrbComms::readSRBJS(Nmea *nmea) {
   _stats->state = 1;
 }
 
-void SrbComms::readSRBWP(Nmea *nmea) {
+void SrbComms::_readSRBWP(Nmea *nmea) {
   
   // Check number of fields
   if (nmea->numFields() != 3) return;
@@ -184,9 +151,3 @@ void SrbComms::readSRBWP(Nmea *nmea) {
   // Set state
   _stats->state = 2;
 }
-
-void SrbComms::clearBuffer() {
-  memset(_buffer, 0, sizeof(*_buffer));
-  _bufferClearTime = millis();
-}
-

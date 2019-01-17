@@ -4,74 +4,42 @@
    Written by Jarod Lam
 */
 
-#include "nmea_gps.h"
-#include "nmea.h"
+#include "srb_gps.h"
 #include "srb.h"
+#include "nmea.h"
 #include <Arduino.h>
 #include <Time.h>
 
-NmeaGps::NmeaGps(SrbStats *stats, HardwareSerial *port) {
-  
-  // Start serial
-  _serial = port;
+SrbGps::SrbGps(SrbStats *stats, HardwareSerial *port) : SrbSerial::SrbSerial(stats, port) {
+
   _serial->begin(57600);
 
   // Configure to send RMC commands only
   _serial->print("$PMTK314,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0*29\r\n");
   // Configure to send every 200ms
   _serial->print("$PMTK220,200*2C\r\n");
-
-  _stats = stats;
-  _clear_buffer();
   
 }
 
-void NmeaGps::update() {
-  while (_serial->available()) {
-    char c = _serial->read();
+void SrbGps::update() {
 
-    // Clear the buffer if line feed
-    if (c == '\n') {
-      _clear_buffer();
-    }
-    // Parse the sentence if carriage return
-    else if (c == '\r') {
-      _parse_buffer();
-      _clear_buffer();
-    }
-    // Add character to the buffer
-    else {
-      if (strlen(_buffer) >= GPS_BUFFER_SIZE) {
-        _clear_buffer();
-      }
-      strncat(_buffer, &c, 1);
-    }
-  }
-
-  // Timeout and clear the buffer
-  if (millis() - _bufferClearTime > GPS_TIMEOUT) {
-    _clear_buffer();
-  }
+  _updateSerial();
+  
 }
 
-void NmeaGps::_clear_buffer() {
-  memset(&_buffer, 0, sizeof(_buffer));
-  _bufferClearTime = millis();
-}
-
-void NmeaGps::_parse_buffer() {
+void SrbGps::_parseBuffer() {
+  
   // Create a new Nmea object and put the sentence in it
   Nmea nmea;
   nmea.write(_buffer);
   
   // Abort if the sentence is invalid
   if (!nmea.validate()) {
-    Serial.println("Invalid sentence");
+    Serial.println("Invalid GPS sentence");
     return;
   }
 
   // 1. Type, abort if not GPRMC
-  //Serial.println(_buffer);
   if (strcmp(nmea.nextField(), "GPRMC") != 0) return;
 
   // 2. Time, discard this
@@ -105,9 +73,11 @@ void NmeaGps::_parse_buffer() {
   // 9. Track angle
   // 10. Date
   // 11. Magnetic variation
+  
 }
 
-float NmeaGps::_degToDec(const char *s, int degLen) {
+float SrbGps::_degToDec(const char *s, int degLen) {
+  
   // Convert degrees portion
   char degStr[degLen];
   strncpy(degStr, s, degLen);
@@ -123,15 +93,13 @@ float NmeaGps::_degToDec(const char *s, int degLen) {
   
   // Add the two
   return deg + mins;
+  
 }
 
-float NmeaGps::_knotsToMps(const char *s) {
+float SrbGps::_knotsToMps(const char *s) {
+  
   float knots = strtod(s, NULL);
   return knots / 1.944;
+  
 }
-
-float NmeaGps::lat() {return _lat;}
-float NmeaGps::lon() {return _lon;}
-float NmeaGps::speed() {return _speed;}
-int NmeaGps::status() {return _status;}
 

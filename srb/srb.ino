@@ -9,7 +9,7 @@
 #include "srb_comms.h"
 #include "srb_motor.h"
 #include "srb_nav.h"
-#include "nmea_gps.h"
+#include "srb_gps.h"
 
 #define USE_WATCHDOG
 #define LOOP_DELAY 100
@@ -21,7 +21,7 @@ int motorSides[] = {LEFT, RIGHT};
 SrbStats stats;
 SrbMotor motors;
 SrbComms comms(&stats, &Serial1);
-NmeaGps gps(&stats, &Serial2);
+SrbGps gps(&stats, &Serial2);
 SrbNav nav(&stats, &motors);
 
 void setup() {
