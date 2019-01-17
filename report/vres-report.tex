@@ -19,15 +19,24 @@
 }
 
 % Title, author, etc.
-\title{Autonomous surf life saving device}
-\author{Jarod Lam}
+\title{\vspace{5.0cm}Autonomous surf life saving device}
+\author{Jarod Lam\\Matthew Dunbabin (Supervisor)}
 \IEEEspecialpapernotice{2018-2019 VRES project at Queensland University of Technology}
 
 \begin{document}
+
+% Title page
+\begin{minipage}{\textwidth}
+\vfill
 \maketitle
+\vfill
+\end{minipage}
+\clearpage
+
+\tableofcontents
 
 \begin{abstract}
-build boat
+build boat that saves people
 \end{abstract}
 
 \section{Introduction}
@@ -35,10 +44,41 @@ Visiting the beach with family and friends is a favourite pastime of many, but t
 
 To supplement the activities of surf life savers at public beaches, a system has been proposed that will allow timely help to be given to people in need while they wait to be rescued. The surf rescue boat (SRB) aims to not only deliver help quickly, but also reduce the risk to which life savers are exposed.
 
-A simple water-based robot such as the one proposed can be constructed relatively cheaply and easily with off-the-shelf components. In the future, systems such as these may become widely available and save the lives of many along our coastal beaches.
+A simple water-based robot such as the one proposed can be constructed relatively cheaply and easily with off-the-shelf components. In the future, systems such as these may become widely available and save the lives of many along our coastal beaches. A prototype of one such robot was designed and built over the course of this project.
 
-\section{System overview}
+The system can be divided into three main sections: a remotely operated water vehicle (the "boat"), an XBee-based radio communications system and protocol, and shoreline control. Out of these, only the vehicle and communications were prototyped in this project; the control system has been developed separately in the past and time constraints prevented it from being implemented.
 
+This report describes these systems in detail, the design methodology, and avenues that can be explored for future development of the surf rescue boat.
+
+\section{Boat}
+
+
+% Todo: system overview figure
+
+\subsection{Hardware}
+The remotely operated boat uses a typically-sized surfboard as a base, and houses electronics in a watertight hard plastic case attached to the top. Two propellers are mounted to the bottom of the surfboard for movement control. GPS and IMU modules are used for navigation, and an XBee radio communicates with the base station.
+
+\subsubsection{Chassis}
+The chassis of the prototype is a second-hard generic surfboard. A custom-built chassis may have alternatively been designed, but this would have likely taken an infeasible amount of time and cost. A surfboard, while intended for human use, is improbably suited for the use as a makeshift water vehicle. In this case, the standardness and availability of surfboards is an advantage to encouraging development of such systems.
+
+\subsubsection{Propellors}
+
+\subsubsection{Electronics housing}
+
+\subsubsection{Microcontroller}
+An Arduino Mega 2560 is at the heart of the boat's electronics. This development board is powerful enough to handle relatively simple communication and processing tasks required to control the boat's sensors and motors. More powerful ARM-based boards such as the Raspberry Pi tend to be less suited to rugged environments, and more difficult to recover from failures.
+
+On top of the Arduino is a Seeedstudio Grove Mega Shield breakout board, which provides headers to various useful functions including UART and I$^2$C. 
+
+\subsubsection{Radio}
+An XBee Pro is mounted on a SparkFun
+
+\subsubsection{Positioning}
+
+\subsection{Software}
+The Arduino Mega 2560 was programmed in C++ on top of Arduino default libraries and custom-made libraries. Efforts were made to keep the code somewhat portable and reusable. All code can be found in Appendix A.
+
+\subsubsection{Main}
 
 \section{Communications}
 Communications between the SRB and the base station are done using XBee radios. By attaching a pair of XBee modules to the base station computer and the on-board Arduino, a virtual serial connection is effectively created between the two devices.
@@ -65,10 +105,10 @@ A common NMEA sentence type is \texttt{GPRMC}, the GPS recommended minimum. \tex
 A NMEA sentence parser was written for the SRB to interpret messages from the on-board GPS and extract location information.
 
 \subsection{Proprietary NMEA sentences}
-Some advantages of using NMEA sentences are that they are standardised, human-readable, robust, and relatively simple to implement. Specified below is a set of custom NMEA sentence types was created for communication between the SRB and the base station.
+Some advantages of using NMEA sentences are that they are standardised, human-readable, robust, and relatively simple to implement. Specified below is a set of custom NMEA sentence types was created for communication between the boat and the base station.
 
 \subsubsection{SRBSM - Status Message}
-The \texttt{SRBSM} sentence is sent periodically by the SRB to update the base station with status information.
+The \texttt{SRBSM} sentence is sent periodically by the boat to update the base station with status information.
 
 \begin{nmeaspec}{\$SRBSM,<ID>,<State>,<Lat>,<Lon>,<Speed>,\\<Heading>,<BattV>,<FwdPower>,\\<TgtHeading>*CS}
 \field{<ID>}{ID of target SRB}
@@ -85,7 +125,7 @@ The \texttt{SRBSM} sentence is sent periodically by the SRB to update the base s
 \end{nmeaspec}
 
 \subsubsection{SRBJS - Joystick}
-The \texttt{SRBJS} sentence is sent by the base station for manual control of the SRB.
+The \texttt{SRBJS} sentence is sent by the base station for manual control of the boat.
 
 \begin{nmeaspec}{\$SRBJS,<ID>,<FwdPower>,<TgtHeading>*CS}
 \field{<ID>}{ID of target SRB}
@@ -94,7 +134,7 @@ The \texttt{SRBJS} sentence is sent by the base station for manual control of th
 \end{nmeaspec}
 
 \subsubsection{SRBWP - Waypoint}
-The \texttt{SRBWP} sentence is sent by the base station to autonomously direct the SRB to a set of coordinates.
+The \texttt{SRBWP} sentence is sent by the base station to autonomously direct the boat to a set of coordinates.
 
 \begin{nmeaspec}{\$SRBJS,<ID>,<TgtLat>,<TgtLon>*CS}
 \field{<ID>}{ID of target SRB}
@@ -102,9 +142,19 @@ The \texttt{SRBWP} sentence is sent by the base station to autonomously direct t
 \field{<TgtLon>}{Target longitude in decimal degrees}
 \end{nmeaspec}
 
-\section{Further development}
+\section{Future development}
 
 \bibliography{bibliography}
 \bibliographystyle{IEEEtran}
+
+\clearpage
+\onecolumn
+\appendices
+
+\section{Code}
+\subsection{the codes}
+
+\section{Drawings}
+\subsection{the drawings}
 
 \end{document}
