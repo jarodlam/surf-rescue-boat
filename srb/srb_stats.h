@@ -1,5 +1,5 @@
 /*
-   srb.h
+   srb_stats.h
    Surf rescue boat control system
    Written by Jarod Lam
 */

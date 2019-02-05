@@ -8,8 +8,8 @@
 #define srb_comms_h
 
 #include <Arduino.h>
-#include "srb.h"
-#include "Nmea.h"
+#include "nmea.h"
+#include "srb_stats.h"
 #include "srb_serial.h"
 
 class SrbComms : public SrbSerial {

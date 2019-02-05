@@ -5,8 +5,6 @@
 */
 
 #include "srb_serial.h"
-#include <Arduino.h>
-#include "srb.h"
 
 SrbSerial::SrbSerial(SrbStats *stats, HardwareSerial *port, long baud) {
   _serial = port;

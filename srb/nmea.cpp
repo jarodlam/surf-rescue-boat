@@ -4,11 +4,6 @@
  * Written by Jarod Lam
  */
 
-#include <string.h>
-#include <stdarg.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <Arduino.h>
 #include "nmea.h"
 
 Nmea::Nmea(void) {

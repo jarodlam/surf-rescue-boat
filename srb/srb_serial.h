@@ -11,7 +11,7 @@
 #define SERIAL_BUFFER_TIMEOUT 500
 
 #include <Arduino.h>
-#include "srb.h"
+#include "srb_stats.h"
 
 class SrbSerial {
 

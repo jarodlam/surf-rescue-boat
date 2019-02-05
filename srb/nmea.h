@@ -7,6 +7,11 @@
 #ifndef nmea_h
 #define nmea_h
 
+#include <string.h>
+#include <stdarg.h>
+#include <stdio.h>
+#include <stdlib.h>
+
 #define NMEA_BUFFER_SIZE 1024
 
 class Nmea {

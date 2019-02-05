@@ -5,10 +5,6 @@
 */
 
 #include "srb_gps.h"
-#include "srb.h"
-#include "nmea.h"
-#include <Arduino.h>
-#include <Time.h>
 
 SrbGps::SrbGps(SrbStats *stats, HardwareSerial *port) : SrbSerial::SrbSerial(stats, port, 57600) {
 

@@ -8,7 +8,9 @@
 #define nmea_gps_h
 
 #include <Arduino.h>
-#include "srb.h"
+#include <Time.h>
+#include "nmea.h"
+#include "srb_stats.h"
 #include "srb_serial.h"
 
 class SrbGps : public SrbSerial {

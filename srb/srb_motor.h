@@ -7,8 +7,10 @@
 #ifndef srb_motor_h
 #define srb_motor_h
 
-#include "srb.h"
+#include <Arduino.h>
 #include <Servo.h>
+#include <stdlib.h>
+#include "srb_stats.h"
 
 // Pulse width min and max for motor signals
 #define SRB_SERVO_MIN 1000

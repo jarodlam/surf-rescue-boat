@@ -5,10 +5,6 @@
 */
 
 #include "srb_motor.h"
-#include "srb.h"
-#include <Arduino.h>
-#include <Servo.h>
-#include <stdlib.h>
 
 void SrbMotor::begin(int pins[], int sides[]) {
   

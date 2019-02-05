@@ -7,7 +7,9 @@
 #ifndef srb_nav_h
 #define srb_nav_h
 
-#include "srb.h"
+#include <Arduino.h>
+#include <math.h>
+#include "srb_stats.h"
 #include "srb_motor.h"
 
 class SrbNav {

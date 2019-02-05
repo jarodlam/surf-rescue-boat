@@ -4,9 +4,7 @@
    Written by Jarod Lam
 */
 
-#include <Arduino.h>
 #include "srb_comms.h"
-#include "nmea.h"
 
 SrbComms::SrbComms(SrbStats *stats, HardwareSerial *port) : SrbSerial(stats, port, 9600) {
   

@@ -4,11 +4,7 @@
    Written by Jarod Lam
 */
 
-#include "srb.h"
-#include "srb_motor.h"
 #include "srb_nav.h"
-#include <Arduino.h>
-#include <math.h>
 
 SrbNav::SrbNav(SrbStats *stats, SrbMotor *motors) {
   _stats = stats;

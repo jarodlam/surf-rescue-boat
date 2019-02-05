@@ -4,7 +4,6 @@
    Written by Jarod Lam
 */
 
-#include <Arduino.h>
 #include "srb_imu.h"
 
 SrbImu::SrbImu(SrbStats *stats, HardwareSerial *port) : SrbSerial(stats, port, 57600) {

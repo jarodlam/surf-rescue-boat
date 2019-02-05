@@ -5,15 +5,15 @@
 */
 
 #include <avr/wdt.h>
-#include "srb.h"
+#include "srb_stats.h"
 #include "srb_motor.h"
 #include "srb_nav.h"
 #include "srb_comms.h"
 #include "srb_gps.h"
 #include "srb_imu.h"
 
-#define USE_WATCHDOG
 #define LOOP_DELAY 100
+#define USE_WATCHDOG
 
 unsigned long prevMillis = 0;
 int motorPins[]  = {2, 3};
