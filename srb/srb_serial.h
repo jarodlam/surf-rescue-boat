@@ -8,7 +8,7 @@
 #define srb_serial_h
 
 #define SERIAL_BUFFER_SIZE 1024
-#define SERIAL_BUFFER_TIMEOUT 1000
+#define SERIAL_BUFFER_TIMEOUT 500
 
 #include <Arduino.h>
 #include "srb.h"
@@ -20,7 +20,7 @@ class SrbSerial {
     /*
      * Initialise SrbImu with the IMU serial port.
      */
-    explicit SrbSerial(SrbStats *stats, HardwareSerial *port);
+    explicit SrbSerial(SrbStats *stats, HardwareSerial *port, long baud);
 
     /*
      * Update the values from serial.
@@ -45,11 +45,6 @@ class SrbSerial {
     char _buffer[SERIAL_BUFFER_SIZE];
     unsigned long _bufferClearTime;
     void _clearBuffer();
-
-    /*
-     * Setup SrbSerial with stats and serial objects.
-     */
-    void _setup(SrbStats *stats, HardwareSerial *port);
 
     /*
      * Update buffer with new serial info.

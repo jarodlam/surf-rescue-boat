@@ -70,6 +70,11 @@ class SrbStats {
      */
     float targetLat = 0;
     float targetLon = 0;
+
+    /*
+     * Magnetic variation (declination) in degrees
+     */
+    float magVar = 0;
 };
 
 #endif

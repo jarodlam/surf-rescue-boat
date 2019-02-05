@@ -47,8 +47,6 @@ void SrbNav::_navAuto() {
   // Get target heading of goal (convert to deg)
   int tHead = atan2(dLat, dLon) * 57.29578;
 
-  Serial.println(atan2(dLat, dLon));
-
   // Move
   _moveTo(_stats->forwardPower, tHead);
   
@@ -75,8 +73,6 @@ void SrbNav::_moveTo(int power, int tHeading) {
 
   // Calculate distance from heading
   int dHead = _headingDiff(tHeading, _stats->heading);
-  Serial.print(dHead);
-  Serial.print(" ");
 
   // Set motor speeds
   int powerL = power;
@@ -102,8 +98,6 @@ float SrbNav::_turnMultiplier(int dHead) {
 
   // Scale according to the function y = (1/90)x + 1
   float multiplier = -(1.0 / 90.0) * dHead + 1;
-  Serial.print(multiplier);
-  Serial.print(" ");
 
   return multiplier;
   

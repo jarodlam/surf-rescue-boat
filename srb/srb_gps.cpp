@@ -10,9 +10,7 @@
 #include <Arduino.h>
 #include <Time.h>
 
-SrbGps::SrbGps(SrbStats *stats, HardwareSerial *port) : SrbSerial::SrbSerial(stats, port) {
-
-  _serial->begin(57600);
+SrbGps::SrbGps(SrbStats *stats, HardwareSerial *port) : SrbSerial::SrbSerial(stats, port, 57600) {
 
   // Configure to send RMC commands only
   _serial->print("$PMTK314,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0*29\r\n");
@@ -69,10 +67,15 @@ void SrbGps::_parseBuffer() {
   Serial.print(_stats->lon, 6);
   Serial.println("");
 
-  // Discard the other fields:
+  // Discard these fields:
   // 9. Track angle
+  nmea.nextField();
   // 10. Date
-  // 11. Magnetic variation
+  nmea.nextField();
+  
+  // 11-12. Magnetic variation
+  _stats->magVar  = strtod(nmea.nextField(), NULL);
+  _stats->magVar *= (strcmp(nmea.nextField(), "E") == 0) ? 1 : -1;
   
 }
 

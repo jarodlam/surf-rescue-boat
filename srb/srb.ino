@@ -6,10 +6,11 @@
 
 #include <avr/wdt.h>
 #include "srb.h"
-#include "srb_comms.h"
 #include "srb_motor.h"
 #include "srb_nav.h"
+#include "srb_comms.h"
 #include "srb_gps.h"
+#include "srb_imu.h"
 
 #define USE_WATCHDOG
 #define LOOP_DELAY 100
@@ -20,9 +21,10 @@ int motorSides[] = {LEFT, RIGHT};
 
 SrbStats stats;
 SrbMotor motors;
+SrbNav   nav(&stats, &motors);
 SrbComms comms(&stats, &Serial1);
-SrbGps gps(&stats, &Serial2);
-SrbNav nav(&stats, &motors);
+SrbGps   gps(&stats, &Serial2);
+SrbImu   imu(&stats, &Serial3);
 
 void setup() {
   
@@ -63,6 +65,7 @@ void loop() {
   // Call update functions for everything!
   gps.update();      // Check GPS serial
   comms.update();    // Check XBee serial
+  imu.update();      // Check IMU serial
   nav.update();      // Calculate nav based on new position/target
   motors.update();   // Accelerate motors to speeds set by nav
 
@@ -72,6 +75,7 @@ void loop() {
 
     // Send status message
     comms.sendSRBSM();
+    Serial.println(stats.heading);
 
   }
 

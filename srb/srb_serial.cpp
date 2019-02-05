@@ -8,12 +8,9 @@
 #include <Arduino.h>
 #include "srb.h"
 
-SrbSerial::SrbSerial(SrbStats *stats, HardwareSerial *port) {
-  _setup(stats, port);
-}
-
-void SrbSerial::_setup(SrbStats *stats, HardwareSerial *port) {
+SrbSerial::SrbSerial(SrbStats *stats, HardwareSerial *port, long baud) {
   _serial = port;
+  _serial->begin(baud);
   _stats = stats;
   _clearBuffer();
 }
