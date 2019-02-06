@@ -5,6 +5,7 @@ import tkinter as tk
 import tkinter.ttk as ttk
 from tkinter import BOTH, END, LEFT, RIGHT, DISABLED, NORMAL, N, S, E, W, X, Y
 from serial.tools.list_ports import *
+from datetime import *
 from nmea import *
 
 # Tkinter
@@ -15,6 +16,7 @@ class Application(ttk.Frame):
         
         self.master.protocol("WM_DELETE_WINDOW", self.exitHandler)
         
+        self.logFileOpen()
         self.setupGUI()
         self.setupThread()
     
@@ -68,16 +70,25 @@ class Application(ttk.Frame):
     
     # Logging to Tkinter widget 
     def log(self, text, error=False):
-        print(text)
-        self.textBox.config(state=NORMAL)
+        # Get current time string
+        timeStr = datetime.now().strftime("%H:%M:%S.%f")
+        timeStr = timeStr[:-3]  # Truncate microseconds
         
+        # Console
+        print("[%s] %s" % (timeStr, text))
+        
+        # Log file
+        self.logFile.write(timeStr + "," + text + "\n")
+        self.logFile.flush()
+        
+        # GUI window
+        self.textBox.config(state=NORMAL)
         if error:
-            self.textBox.insert(END, "%s\n" % text, "error")
+            self.textBox.insert(END, "[%s] %s\n" % (timeStr, text), "error")
         else:
-            self.textBox.insert(END, "%s\n" % text)
+            self.textBox.insert(END, "[%s] %s\n" % (timeStr, text))
         if self.autoscroll.get():
             self.textBox.yview_moveto(1)
-        
         self.textBox.config(state=DISABLED)
     
     # Open a serial port
@@ -142,6 +153,17 @@ class Application(ttk.Frame):
     def exitHandler(self):
         self.closePort()
         self.master.destroy()
+        self.logFileClose()
+        
+    # Open log file
+    def logFileOpen(self):
+        now = datetime.now()
+        fileName = now.strftime("srb_%Y-%m-%d_%H-%M-%S.log")
+        self.logFile = open(fileName, "w+")
+    
+    # Close log file
+    def logFileClose(self):
+        self.logFile.close()
     
 # Main loop
 if __name__ == "__main__":
