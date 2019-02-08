@@ -5,6 +5,13 @@
 \usepackage{tikz}
 \usepackage{graphicx}
 \usepackage{url}
+\usepackage{booktabs}
+\usepackage{tabu}
+\usepackage{multirow}
+\usepackage{listings}
+
+% Use font weights in text for siunitx
+\sisetup{detect-weight=true, detect-family=true}
 
 % NMEA spec environment
 \newenvironment{nmeaspec}[1]
@@ -50,7 +57,7 @@ To supplement the activities of surf life savers at public beaches, a system has
 
 A simple water-based robot such as the one proposed can be constructed relatively cheaply and easily with off-the-shelf components. In the future, systems such as these may become widely available and save the lives of many along our coastal beaches. A prototype of one such robot was designed and built over the course of this project.
 
-The system is divided into three main sections: a remotely operated water vehicle (the "boat"), an XBee-based radio communications system and protocol, and shoreline control. Out of these, only the vehicle and communications were prototyped in this project; the control system has been developed separately in the past and time constraints prevented it from being implemented.
+The system is divided into three main sections: a remotely operated water vehicle (the "boat"), an XBee-based radio communications system between the boat and a base station, and a computer vision-based control system. Out of these, only the vehicle and communications were prototyped in this project; the control system has been developed separately in the past and time constraints prevented it from being implemented.
 
 This report describes these systems in detail, the design methodology, and avenues that can be explored for future development of the surf rescue boat.
 
@@ -72,7 +79,7 @@ Surfboard. Chosen for its stability and familiarity in the surf. The standardnes
 Pelican 1120 Case. A laser-cut acrylic frame was made to mount the electronics in the box. Wire glands on the side of the box allow propellor wires to be fed through the box walls.
 
 \subsection{Electronics}
-An Arduino Mega 2560 controls the onboard electronics mounted in the case. GPS and IMU modules are used for navigation, and an XBee radio communicates with the base station. A block connection diagram of the electronics is shown in Figure \ref{elecdiag}.
+An Arduino Mega 2560 controls the onboard electronics mounted in the case. GPS and IMU modules are used for navigation, and an XBee radio communicates with the base station. Two electronics speed controllers (ESCs) control each of the two propellers. A block connection diagram of the electronics is shown in Figure \ref{elecdiag}.
 
 \begin{figure}
 \center
@@ -114,8 +121,8 @@ An Arduino Mega 2560 controls the onboard electronics mounted in the case. GPS a
 \draw [blue, thick] (X) -- ++(0,-1.5) -- ++(-1.5,0) node [pos=0.5, above] {UART} -- ++(0,-1);
 
 % PWM lines
-\draw [black, thick] (E2)++(-0.25,1) -- ++(0,0.3) -- ++(1.5,0) -- ++(0,1);
-\draw [black, thick] (E1)++(-0.25,1) -- ++(0,0.5) -- ++(2.25,0) node[pos=0.45, above] {PWM} -- ++(0,1);
+\draw [olive, thick] (E2)++(-0.25,1) -- ++(0,0.3) -- ++(1.5,0) -- ++(0,1);
+\draw [olive, thick] (E1)++(-0.25,1) -- ++(0,0.5) -- ++(2.25,0) node[pos=0.45, above] {PWM} -- ++(0,1);
 
 \end{pgfonlayer}
 
@@ -131,6 +138,12 @@ An Arduino Mega 2560 controls the onboard electronics mounted in the case. GPS a
 \label{elecframe}
 \end{figure}
 
+\begin{figure}[h!]
+\includegraphics[width=\columnwidth]{boat-hardware.jpg}
+\caption{Boat electronics in Pelican case housing}
+\label{boathardware}
+\end{figure}
+
 \subsubsection{Microcontroller}
 Arduino Mega 2560 with Seeedstudio Grove Mega Shield breakout board. This development board is powerful enough to handle relatively simple communication and processing tasks required to control the boat's sensors and motors. More powerful ARM-based boards such as the Raspberry Pi are less suited to rugged environments, and more difficult to recover from failures. The shield provides robust headers to the UART functions of the Arduino.
 
@@ -140,7 +153,7 @@ Digi XBee Pro S1 on a SparkFun XBee Explorer Regulated. This connects to the Ard
 \subsubsection{GPS}
 LOCOSYS LS20031 GPS receiver. Sends data to the Arduino via UART using the NMEA 0183 protocol found in section 3. 
 
-\subsubsection{Orientation}
+\subsubsection{IMU}
 Sparkfun SEN-10736 9DOF Razor IMU. Sends data to the Arduino via UART. Currently, only the compass value from the sensor is used. Flashed with the Razor AHRS firmware: \url{https://github.com/Razor-AHRS/razor-9dof-ahrs}
 
 \subsubsection{Motor control}
@@ -182,12 +195,12 @@ Defines the \texttt{SrbMotor} class, which controls motor movement. Receives mot
 Defines the \texttt{SrbNav} class, which controls robot navigation. In manual mode, sets motor speed and orients the boat according to target speed and heading sent from the base station. In auto mode, moves the boat toward a set of coordinates sent from the base station. Motors are controlled with the \texttt{SrbMotor} class.
 
 \section{Communications}
-Communications between the SRB and the base station are done using XBee radios. By attaching a pair of XBee modules to the base station computer and the on-board Arduino, a virtual serial connection is effectively created between the two devices.
+Communications between the SRB and the base station are performed with XBee radios. By attaching a pair of XBee modules to the base station computer and the on-board Arduino, a virtual serial connection is created between the two devices.
 
-\subsection{NMEA 0183 protocol}
-NMEA 0183 is a communications specification designed to create a standardised serial interface for GPS devices. Every NMEA `sentence' begins with a \texttt{\$} and ends with \texttt{*CS\textbackslash r\textbackslash n}, where \texttt{CS} is a two-digit hexadecimal checksum of the sentence.
+\subsection{NMEA 0183 sentences}
+NMEA 0183 is a communications specification designed to create a standardised serial interface for GPS devices. Every NMEA `sentence' begins with a \texttt{\$} and ends with \texttt{*CS\textbackslash r\textbackslash n}, where \texttt{CS} is a two-digit hexadecimal checksum of the sentence. Some advantages of using NMEA sentences are that they are standardised, human-readable, robust, and relatively simple to implement. 
 
-A common NMEA sentence type is \texttt{GPRMC}, the GPS recommended minimum. \texttt{GPRMC} sentences are specified as follows: \cite{gpsinfo}
+A common NMEA sentence type is \texttt{GPRMC}, the GPS recommended minimum. This sentence is used to receive information from the onboard GPS module. \texttt{GPRMC} sentences are specified as follows: \cite{gpsinfo}
 
 \begin{nmeaspec}{\$GPRMC,<Time>,<Status>,<Lat>,<LatDir>,\\<Lon>,<LonDir>,<Speed>,<Angle>,<Date>,\\<MagVar>,<MagDir>*CS}
 \field{<Time>}{UTC timestamp in HHmmss format}
@@ -203,10 +216,7 @@ A common NMEA sentence type is \texttt{GPRMC}, the GPS recommended minimum. \tex
 \field{<MagDir>}{Magnetic variation direction}
 \end{nmeaspec}
 
-A NMEA sentence parser was written for the SRB to interpret messages from the on-board GPS and extract location information.
-
-\subsection{Proprietary NMEA sentences}
-Some advantages of using NMEA sentences are that they are standardised, human-readable, robust, and relatively simple to implement. Specified below is a set of custom NMEA sentence types was created for communication between the boat and the base station.
+A NMEA sentence parser and constructor was written in C++ and Python for the boat and the base station, respectively. Specified below is a set of custom NMEA sentence types that was created for communication between the boat and the base station over the XBee radios.
 
 \subsubsection{SRBSM - Status Message}
 The \texttt{SRBSM} sentence is sent periodically by the boat to update the base station with status information.
@@ -243,9 +253,142 @@ The \texttt{SRBWP} sentence is sent by the base station to autonomously direct t
 \field{<TgtLon>}{Target longitude in decimal degrees}
 \end{nmeaspec}
 
+\subsection{Hardware}
+
+\begin{figure}[h!]
+\includegraphics[width=\columnwidth]{comms-hardware.jpg}
+\caption{Communications hardware}
+\label{commshardware}
+\end{figure}
+
+The base station uses an XBee S1 radio on a Sparkfun XBee Explorer Regulated to communicate with the boat. An FTDI232 breakout board allows the computer's USB port to interface with the XBee's UART. This system is shown in Figure \ref{commshardware}.
+
+\subsection{Software}
+
+\begin{figure}[h!]
+\includegraphics[width=\columnwidth]{srb-base-screenshot.png}
+\caption{Screenshot of \texttt{srb-base.py}}
+\label{srbbase}
+\end{figure}
+
+The Python program \texttt{srb-base.py} was developed to provide a rudimentary graphical interface for the wireless serial connection over XBee. A screenshot of this program is shown in Figure \ref{srbbase}.
+
+The Tkinter interface was modelled on the Arduino IDE's Serial Monitor, but is designed to send NMEA sentences over the serial connection.
+
+"Naked" messages without a leading \texttt{\$} or trailing \texttt{*CS} have these added when these are sent, making it easy to send valid arbitrary sentences. Incoming messages are validated to ensure the correct syntax and checksum, and invalid sentences are shown in red. The NMEA sentence handler class, \texttt{Nmea}, is separated into the file \texttt{nmea.py}.
+
+All incoming and outgoing messages are logged to the GUI window, terminal window, and a log file in the working directory. The log file includes a comma-separated timestamp at the beginning of each line, allowing the log data to be processed in a makeshift way as a spreadsheet.
+
+The source code for \texttt{srb-base.py} and \texttt{nmea.py} can be found in Appendix A. However, this code is unstable and should not be used as-is, as it was written for testing purposes only.
+
 \section{Testing}
+Testing was performed on the power consumption of the boat in a lab setting, as well as the forward speed and turning speed of the boat under typical calm conditions.
+
+\subsection{Power consumption}
+
+\subsubsection{Method}
+The boat was elevated in midair on two stands and oriented to face 0 degrees North according to the onboard magnetometers. Two multimeters were connected to the battery, one in parallel measuring the voltage under load, and one in series measuring current.
+
+Starting from an idle state, the message
+\begin{center}
+\texttt{\$SRBJS,0,<FwdPower>,0*<CS>}
+\end{center}
+was sent from the base station to the boat, with \texttt{<FwdPower>} as the throttle value being tested. Voltage and current values were recorded once they stabilised. Then, the message
+\begin{center}
+\texttt{\$SRBJS,0,0,0*46}
+\end{center}
+was sent from the base station to halt the motors. This was repeated for the throttle levels 0 (idle), 20, 40, 60, 80, and 100.
+
+\subsubsection{Analysis and discussion}
+\begin{table}[h!]
+\begin{tabu} to \columnwidth {X[c]X[c]X[c]}
+\toprule
+\textbf{Throttle (\SI{}{\%})} & \textbf{Voltage (\SI{}{V})}  & \textbf{Current (\SI{}{A})} \\ \midrule
+0 & & \\ \midrule
+20 & & \\ \midrule
+40 & & \\ \midrule
+60 & & \\ \midrule
+80 & & \\ \midrule
+100 & & \\ \midrule
+\end{tabu}
+\caption{Power consumption test results}
+\end{table}
+
+\begin{table}[h!]
+\begin{tabu} to \columnwidth {X[1.5c]X[c]X[2c]}
+\toprule
+\textbf{Throttle (\SI{}{\%})} & \textbf{Power (\SI{}{W})}  & \textbf{\SI{11.6}{Ah} runtime (\SI{}{min})} \\ \midrule
+0 & & \\ \midrule
+20 & & \\ \midrule
+40 & & \\ \midrule
+60 & & \\ \midrule
+80 & & \\ \midrule
+100 & & \\ \midrule
+\end{tabu}
+\caption{Power consumption analysis}
+\end{table}
+
+
+\subsection{Forward speed}
+
+\subsubsection{Method}
+The boat was placed in the Brisbane River at a clear, calm location and oriented along the shoreline. A rope was attached to aid retrieval.
+
+Starting from an idle state, the message
+\begin{center}
+\texttt{\$SRBJS,0,<FwdPower>,<TgtHeading>*<CS>}
+\end{center}
+was sent from the base station to the boat, with \texttt{<FwdPower>} as the throttle value being tested and \texttt{<TgtHeading>} as the boat's current orientation. After the boat travelled roughly 20 metres, the message
+\begin{center}
+\texttt{\$SRBJS,0,0,0*46}
+\end{center}
+was sent back from the base station to halt the motors. The boat was moved back to its starting position. This process was repeated twice for each throttle level being tested.
+
+Messages from the boat were captured into a file using \texttt{srb-base.py}. All messages except for \texttt{SRBSM} were removed by running the terminal command:
+\begin{center}
+\texttt{\$grep "SRBSM" [logfilename] > results.csv}
+\end{center}
+which saved the results in a \texttt{.csv} file.
+
+\subsubsection{Analysis and discussion}
+\begin{table}[h!]
+\begin{tabu} to \columnwidth {X[c]X[c]X[c]X[c]X[c]X[c]X[c]}
+\toprule
+\multirow{2}{*}{\textbf{Throttle (\SI{}{\%})}} & \multicolumn{3}{c}{\textbf{Accel time (\SI{}{s})}}  & \multicolumn{3}{c}{\textbf{Max speed (\SI{}{\m\per\s})}} \\
+& 1 & 2 & avg. & 1 & 2 & avg. \\ \midrule
+25 & & \\ \midrule
+50 & & \\ \midrule
+75 & & \\ \midrule
+100 & & \\ \midrule
+\end{tabu}
+\caption{Forward speed test results}
+\end{table}
+
+\begin{figure}[h!]
+\centering
+\caption{Forward speed vs. time}
+\end{figure}
 
 \section{Future development}
+
+\subsection{Boat}
+% Voltage/current measurement and logging
+% More propellers, 3+ motor omni-drive
+% Higher battery capacity for longer runtime
+% Structure under boat for stability
+% On/off switch
+
+\subsection{Communications}
+% Housing for the base station
+% Return home mechanism
+% Maintain position mechanism
+
+\subsection{Computer vision}
+% Been worked on in the past
+% Connect this to the comms system
+% Brief description of the idea
+
+\section{Conclusion}
 
 \bibliography{bibliography}
 \bibliographystyle{IEEEtran}
@@ -255,7 +398,12 @@ The \texttt{SRBWP} sentence is sent by the base station to autonomously direct t
 \appendices
 
 \section{Code}
-\subsection{the codes}
+
+\subsection{\texttt{srb-base.py}}
+\lstinputlisting[language=Python, frame=single]{../srb-base/srb-base.py}
+
+\subsection{\texttt{nmea.py}}
+
 
 \section{Drawings}
 \subsection{the drawings}

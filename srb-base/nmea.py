@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
 
-#import re
-
 class Nmea:
     
     def __init__(self):
