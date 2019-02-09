@@ -8,7 +8,6 @@ from serial.tools.list_ports import *
 from datetime import *
 from nmea import *
 
-# Tkinter
 class Application(ttk.Frame):
     
     def __init__(self, parent, *args, **kwargs):
@@ -20,7 +19,6 @@ class Application(ttk.Frame):
         self.setupGUI()
         self.setupThread()
     
-    # Set up GUI
     def setupGUI(self):
         self.pack(fill=BOTH, expand=True)
         self.master.title("SRB base")
@@ -51,24 +49,24 @@ class Application(ttk.Frame):
         controls.pack(fill=X,ipady=3)
         
         self.autoscroll = tk.IntVar()
-        scrollCheck = ttk.Checkbutton(controls, text="Autoscroll", variable=self.autoscroll)
+        scrollCheck = ttk.Checkbutton(controls, text="Autoscroll",
+                                      variable=self.autoscroll)
         scrollCheck.pack(side=LEFT)
         self.autoscroll.set(1)
 
         serialPorts = [item.device for item in comports()]
         self.selectedPort = tk.StringVar()
-        self.connectButton = ttk.Button(controls, text="Connect", command=self.openPort)
+        self.connectButton = ttk.Button(controls, text="Connect",
+                                        command=self.openPort)
         self.connectButton.pack(side=RIGHT)
         portMenu = ttk.OptionMenu(controls, self.selectedPort, *serialPorts)
         portMenu.pack(side=RIGHT,fill=X, expand=True)
     
-    # Threads
     def setupThread(self):
         self.ser = serial.Serial()
         self.serialThread = threading.Thread(target=self.readSerial)
         self.serialThread.daemon = True
     
-    # Logging to Tkinter widget 
     def log(self, text, error=False):
         # Get current time string
         timeStr = datetime.now().strftime("%H:%M:%S.%f")
@@ -91,7 +89,6 @@ class Application(ttk.Frame):
             self.textBox.yview_moveto(1)
         self.textBox.config(state=DISABLED)
     
-    # Open a serial port
     def openPort(self):
         port = self.selectedPort.get()
         try:
@@ -102,11 +99,9 @@ class Application(ttk.Frame):
             self.log("Error opening port %s: %s" % (port, str(err)), error=True)
             self.closePort()
     
-    # Close a serial port
     def closePort(self):
         self.ser.close()
     
-    # Serial input 
     def readSerial(self):
         while True:
             if self.ser.isOpen():
@@ -117,7 +112,6 @@ class Application(ttk.Frame):
             else:
                 self.connectButton.config(state=DISABLED)
     
-    # Sentence parsing
     def parseSentence(self, sent):
         try:
             # Create a Nmea object and validate
@@ -130,7 +124,6 @@ class Application(ttk.Frame):
         except Exception as err:
             self.log("Error parsing sentence: %s" % str(err), error=True)
     
-    # Send a sentence and add checksum
     def sendSentence(self, *args):
         if not self.ser.isOpen(): return
 
@@ -148,24 +141,20 @@ class Application(ttk.Frame):
             self.log("[SEND] %s" % s.sentence.rstrip('\r\n'))
         except Exception as err:
             self.log("Error sending sentence: " + str(err), error=True)
-        
-    # Exit handler
-    def exitHandler(self):
-        self.closePort()
-        self.master.destroy()
-        self.logFileClose()
-        
-    # Open log file
+
     def logFileOpen(self):
         now = datetime.now()
         fileName = now.strftime("srb_%Y-%m-%d_%H-%M-%S.log")
         self.logFile = open(fileName, "w+")
-    
-    # Close log file
+
     def logFileClose(self):
         self.logFile.close()
+
+    def exitHandler(self):
+        self.closePort()
+        self.master.destroy()
+        self.logFileClose()
     
-# Main loop
 if __name__ == "__main__":
     root = tk.Tk()
     app = Application(root)

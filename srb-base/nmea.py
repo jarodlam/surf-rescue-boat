@@ -43,6 +43,7 @@ class Nmea:
         
     # Return arguments as a list.
     def listify(self):
-        sentenceStripped = self.sentence[self.sentence.find("$")+1:self.sentence.find("*")]
+        sentenceStripped = self.sentence[self.sentence.find("$")+1 :
+                                         self.sentence.find("*")]
         listified = sentenceStripped.split(',')
         return listified

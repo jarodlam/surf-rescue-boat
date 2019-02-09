@@ -86,11 +86,6 @@ class Nmea {
     */
     unsigned char generateChecksum(const char *s);
 
-    /*
-     * Powers of 10 for float to string conversion
-     */
-    const long _POW10[11] = {1, 10, 100, 1000, 10000, 100000, 1000000,
-                             10000000, 100000000, 1000000000, 10000000000};
 };
 
 #endif
