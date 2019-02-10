@@ -9,9 +9,35 @@
 \usepackage{tabu}
 \usepackage{multirow}
 \usepackage{listings}
+\usepackage{ragged2e}
 
 % Use font weights in text for siunitx
 \sisetup{detect-weight=true, detect-family=true}
+
+% Listings settings
+\lstset{
+  frame=single,
+  basicstyle=\scriptsize,
+  breaklines=true,
+  postbreak=\mbox{$\hookrightarrow$}\space,
+  numbers=left,
+  numbersep=5pt,
+  xleftmargin=2em
+}
+
+% Code and drawings commands
+\newcommand{\srbsource}[2]{
+\subsection{\texttt{\protect\url{#1}}}
+\lstinputlisting[language=#2]{../#1}
+}
+
+\newcommand{\srbdrawing}[3][0.89]{
+\subsection{#2}
+\noindent
+\centering
+\includegraphics[height=#1\textwidth, angle=90]{#3}
+\justify
+}
 
 % NMEA spec environment
 \newenvironment{nmeaspec}[1]
@@ -44,27 +70,28 @@
 \end{minipage}
 \clearpage
 
-\tableofcontents
-
 \begin{abstract}
 build boat that saves people
 \end{abstract}
 
+\tableofcontents
+
 \section{Introduction}
-Surf life savers regularly patrol popular beaches to help those in danger, but there is a limit to the speed and ability of a human swimmer.
+Surf life savers regularly patrol beaches to help those in danger and are essential to keeping public beaches safe. In Queensland alone, over three thousand are rescued and hundreds are resuscitated by lifesaving services every year. \cite{lifesaving} Even so, from 2008-2018, there was an average of 47 drowning deaths per year at Australian beaches--a tragically high number that many organisations are working to reduce. \cite{drowning}
 
-To supplement the activities of surf life savers at public beaches, a system has been proposed that will allow timely help to be given to people in danger while they wait to be rescued. The surf rescue boat (SRB) aims to deliver help quickly and reduce the risk to which life savers are exposed.
+To supplement the activities of surf life savers and other services at public beaches, a system has been proposed that will allow timely help to be given to people in distress while waiting to be rescued. The surf rescue boat (SRB) aims to deliver help quickly and reduce the risk to which life savers are exposed.
 
-A simple water-based robot such as the one proposed can be constructed relatively cheaply and easily with off-the-shelf components. In the future, systems such as these may become widely available and save the lives of many along our coastal beaches. A prototype of one such robot was designed and built over the course of this project.
+The basic concept of the design is a remotely-controlled floating water vehicle that sits in the surf away from the shore at a beach. At most times, the vehicle is idle and remains stationary in the surf. When a person in distress is seen, a life saver on the shore can remotely direct the vehicle to the person to support them while they wait for help.
 
-The system is divided into three main sections: a remotely operated water vehicle (the "boat"), an XBee-based radio communications system between the boat and a base station, and a computer vision-based control system. Out of these, only the vehicle and communications were prototyped in this project; the control system has been developed separately in the past and time constraints prevented it from being implemented.
+A simple water-based robot such as the one proposed can be constructed relatively cheaply and easily with off-the-shelf components. In the future, systems such as these may become widely available and save the lives of many along coastal beaches.
 
-This report describes these systems in detail, the design methodology, and avenues that can be explored for future development of the surf rescue boat.
+The system is divided into three main sections: the remotely operated water vehicle (the "boat"), an XBee-based radio communications system between the boat and a base station, and a computer vision-based control system. Out of these, only the vehicle and communications were prototyped in this project; the control system has been developed separately in the past and time constraints prevented it from being implemented.
+
+Design considerations taken into account include cost of construction, parts, and maintenance; usability and user-friendliness; and effectiveness as a water-based vehicle.
+
+This report describes these systems in detail, the design and testing methodology, and avenues that can be explored for future development of the surf rescue boat.
 
 \section{Boat}
-
-
-% Todo: system overview figure
 
 \subsection{Mechanical}
 The remotely operated boat uses a standard surfboard as a base, and houses electronics in a watertight hard plastic case attached to the top. Two propellers are mounted to the bottom of the surfboard for movement control.
@@ -195,7 +222,7 @@ Defines the \texttt{SrbMotor} class, which controls motor movement. Receives mot
 Defines the \texttt{SrbNav} class, which controls robot navigation. In manual mode, sets motor speed and orients the boat according to target speed and heading sent from the base station. In auto mode, moves the boat toward a set of coordinates sent from the base station. Motors are controlled with the \texttt{SrbMotor} class.
 
 \section{Communications}
-Communications between the SRB and the base station are performed with XBee radios. By attaching a pair of XBee modules to the base station computer and the on-board Arduino, a virtual serial connection is created between the two devices.
+Communications between the SRB and the base station are achieved using XBee radios. By attaching a pair of XBee modules to the base station computer and the on-board Arduino, a virtual serial connection is created between the two devices.
 
 \subsection{NMEA 0183 sentences}
 NMEA 0183 is a communications specification designed to create a standardised serial interface for GPS devices. Every NMEA `sentence' begins with a \texttt{\$} and ends with \texttt{*CS\textbackslash r\textbackslash n}, where \texttt{CS} is a two-digit hexadecimal checksum of the sentence. Some advantages of using NMEA sentences are that they are standardised, human-readable, robust, and relatively simple to implement. 
@@ -218,7 +245,7 @@ A common NMEA sentence type is \texttt{GPRMC}, the GPS recommended minimum. This
 
 A NMEA sentence parser and constructor was written in C++ and Python for the boat and the base station, respectively. Specified below is a set of custom NMEA sentence types that was created for communication between the boat and the base station over the XBee radios.
 
-\subsubsection{SRBSM - Status Message}
+\subsubsection{\texttt{SRBSM} - Status Message}
 The \texttt{SRBSM} sentence is sent periodically by the boat to update the base station with status information.
 
 \begin{nmeaspec}{\$SRBSM,<ID>,<State>,<Lat>,<Lon>,<Speed>,\\<Heading>,<BattV>,<FwdPower>,\\<TgtHeading>*CS}
@@ -227,24 +254,24 @@ The \texttt{SRBSM} sentence is sent periodically by the boat to update the base 
 \field{<Lat>}{Latitude in decimal degrees}
 \field{<Lon>}{Longitude in decimal degrees}
 \field{<Speed>}{Speed in metres per second}
-\field{<Heading>}{Compass heading in degrees CW from north}
+\field{<Heading>}{Compass heading in deg CW from N}
 \field{<BattV>}{Current battery voltage}
 \field{<FwdPower>}{Forward power from -100 to 100}
 \field{<TgtLat>}{Target latitude in decimal degrees}
 \field{<TgtLon>}{Target longitude in decimal degrees}
-\field{<TgtHeading>}{Target heading in degrees CW from north}
+\field{<TgtHeading>}{Target heading in deg CW from N}
 \end{nmeaspec}
 
-\subsubsection{SRBJS - Joystick}
+\subsubsection{\texttt{SRBJS} - Joystick}
 The \texttt{SRBJS} sentence is sent by the base station for manual control of the boat.
 
 \begin{nmeaspec}{\$SRBJS,<ID>,<FwdPower>,<TgtHeading>*CS}
 \field{<ID>}{ID of target SRB}
 \field{<FwdPower>}{Forward power from -100 to 100}
-\field{<TgtHeading>}{Target heading in degrees CW from north}
+\field{<TgtHeading>}{Target heading in deg. CW from N}
 \end{nmeaspec}
 
-\subsubsection{SRBWP - Waypoint}
+\subsubsection{\texttt{SRBWP} - Waypoint}
 The \texttt{SRBWP} sentence is sent by the base station to autonomously direct the boat to a set of coordinates.
 
 \begin{nmeaspec}{\$SRBJS,<ID>,<TgtLat>,<TgtLon>*CS}
@@ -273,9 +300,9 @@ The base station uses an XBee S1 radio on a Sparkfun XBee Explorer Regulated to 
 
 The Python program \texttt{srb-base.py} was developed to provide a rudimentary graphical interface for the wireless serial connection over XBee. A screenshot of this program is shown in Figure \ref{srbbase}.
 
-The Tkinter interface was modelled on the Arduino IDE's Serial Monitor, but is designed to send NMEA sentences over the serial connection.
+The Tkinter interface was modelled on the Arduino IDE's Serial Monitor, but is designed to send NMEA sentences instead of arbitrary text over the serial connection.
 
-"Naked" messages without a leading \texttt{\$} or trailing \texttt{*CS} have these added when these are sent, making it easy to send valid arbitrary sentences. Incoming messages are validated to ensure the correct syntax and checksum, and invalid sentences are shown in red. The NMEA sentence handler class, \texttt{Nmea}, is separated into the file \texttt{nmea.py}.
+"Naked" messages without a leading \texttt{\$} or trailing \texttt{*CS} have these added when they are sent, making it easy to send valid sentences. Incoming messages are validated to ensure the correct syntax and checksum, and invalid sentences are shown in red. The NMEA sentence handler class, \texttt{Nmea}, is separated into the file \texttt{nmea.py}.
 
 All incoming and outgoing messages are logged to the GUI window, terminal window, and a log file in the working directory. The log file includes a comma-separated timestamp at the beginning of each line, allowing the log data to be processed in a makeshift way as a spreadsheet.
 
@@ -394,18 +421,36 @@ which saved the results in a \texttt{.csv} file.
 \bibliographystyle{IEEEtran}
 
 \clearpage
-\onecolumn
 \appendices
 
 \section{Code}
 
-\subsection{\texttt{srb-base.py}}
-\lstinputlisting[language=Python, frame=single]{../srb-base/srb-base.py}
+\srbsource{srb/srb.ino}{C++}
+\srbsource{srb/nmea.h}{C++}
+\srbsource{srb/nmea.cpp}{C++}
+\srbsource{srb/srb_stats.h}{C++}
+\srbsource{srb/srb_serial.h}{C++}
+\srbsource{srb/srb_serial.cpp}{C++}
+\srbsource{srb/srb_gps.h}{C++}
+\srbsource{srb/srb_gps.cpp}{C++}
+\srbsource{srb/srb_comms.h}{C++}
+\srbsource{srb/srb_comms.cpp}{C++}
+\srbsource{srb/srb_imu.h}{C++}
+\srbsource{srb/srb_imu.cpp}{C++}
+\srbsource{srb/srb_motor.h}{C++}
+\srbsource{srb/srb_motor.cpp}{C++}
+\srbsource{srb/srb_nav.h}{C++}
+\srbsource{srb/srb_nav.cpp}{C++}
+\srbsource{srb-base/srb-base.py}{Python}
+\srbsource{srb-base/nmea.py}{Python}
 
-\subsection{\texttt{nmea.py}}
-
-
+\onecolumn
 \section{Drawings}
-\subsection{the drawings}
+
+\srbdrawing{Top board}{top-board-drawing.pdf}
+\srbdrawing{Middle board}{middle-board-drawing.pdf}
+\srbdrawing{Bottom board}{bottom-board-drawing.pdf}
+\srbdrawing{Motor mount top}{motor-mount-top-drawing.pdf}
+\srbdrawing{Motor mount bottom}{motor-mount-bottom-drawing.pdf}
 
 \end{document}

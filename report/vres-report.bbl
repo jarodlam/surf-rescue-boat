@@ -21,6 +21,19 @@
 \providecommand{\BIBdecl}{\relax}
 \BIBdecl
 
+\bibitem{lifesaving}
+\BIBentryALTinterwordspacing
+{Surf Live Saving Queensland}, ``Statistics,'' accessed February 2019.
+  [Online]. Available: \url{http://lifesaving.com.au/about/statistics/}
+\BIBentrySTDinterwordspacing
+
+\bibitem{drowning}
+\BIBentryALTinterwordspacing
+{Royal Life Saving Australia}, ``National drowning report 2018,'' accessed
+  February 2019. [Online]. Available:
+  \url{https://www.royallifesaving.com.au/__data/assets/pdf_file/0004/23197/RLS_NDR2018_ReportLR.pdf}
+\BIBentrySTDinterwordspacing
+
 \bibitem{gpsinfo}
 \BIBentryALTinterwordspacing
 D.~DePriest, ``Nmea data,'' accessed November 2018. [Online]. Available:
