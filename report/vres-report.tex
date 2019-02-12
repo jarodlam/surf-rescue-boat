@@ -16,27 +16,29 @@
 
 % Listings settings
 \lstset{
-  frame=single,
   basicstyle=\scriptsize,
   breaklines=true,
   postbreak=\mbox{$\hookrightarrow$}\space,
   numbers=left,
   numbersep=5pt,
-  xleftmargin=2em
+  xleftmargin=2em,
+  frame=single
 }
 
 % Code and drawings commands
 \newcommand{\srbsource}[2]{
-\subsection{\texttt{\protect\url{#1}}}
+\subsubsection{\texttt{\protect\url{#1}}} \mbox{}
 \lstinputlisting[language=#2]{../#1}
 }
 
-\newcommand{\srbdrawing}[3][0.89]{
-\subsection{#2}
+\newcommand{\srbdrawing}[3][0.87]{
+\subsubsection{#2}
+\mbox{}
 \noindent
-\centering
+\begin{center}
 \includegraphics[height=#1\textwidth, angle=90]{#3}
-\justify
+\end{center}
+\newpage
 }
 
 % NMEA spec environment
@@ -47,8 +49,9 @@
 \noindent\texttt{#1}
 \vspace{0.2cm}
 
-\noindent Where: \vspace{0.1cm}\\  \noindent
-\vspace{0.2cm}
+\noindent Fields:
+\vspace{0.1cm} \\ 
+\noindent \vspace{0.2cm}
 \begin{tabular}{ll}
 }
 {
@@ -71,36 +74,42 @@
 \clearpage
 
 \begin{abstract}
-build boat that saves people
+Life saving services rescue thousands of people every year and are essential to keeping public beaches safe. However, accidents still happen and life savers are often required to put themselves at risk. This paper describes the design and testing of the Surf Rescue Boat, a system intended to supplement the work of lifesaving services at public beaches. The system comprises a remotely operated water vehicle (the ``boat"), a communications system, and a computer vision system as an interface for navigation (not developed in this project). The boat uses a life saving rescue board as a base, with two propellers mounted on the bottom and a waterproof case of electronics on the top. It is intended to roam around the surf and be directed to positions through the communications system from an onshore base station. When a person in distress is found, the boat is sent by the user to the the GPS coordinates of the person, where the boat provides immediate support while the person is rescued. Over the course of this project, the boat and communications were developed to a stage where they could be tested under controlled conditions in the water; however, time constraints prevented field testing from being completed. Several areas for future development are proposed for this project to move it toward a viable system. The most significant of these proposals is the development of the computer vision component, which will allow GPS positions to be selected from a live onshore camera feed. With more development from its proof of concept stage, the Surf Rescue Boat and similar systems could save countless lives along public beaches in the future.
 \end{abstract}
 
+\setcounter{tocdepth}{2}
 \tableofcontents
 
 \section{Introduction}
-Surf life savers regularly patrol beaches to help those in danger and are essential to keeping public beaches safe. In Queensland alone, over three thousand are rescued and hundreds are resuscitated by lifesaving services every year. \cite{lifesaving} Even so, from 2008-2018, there was an average of 47 drowning deaths per year at Australian beaches--a tragically high number that many organisations are working to reduce. \cite{drowning}
+Surf life savers regularly patrol beaches to help those in danger and are essential to keeping public beaches safe. In Queensland alone, over three thousand are rescued and hundreds are resuscitated by lifesaving services every year \cite{lifesaving}. Even so, from 2008-2018, there was an average of 47 drowning deaths per year at Australian beaches--a tragically high number that many organisations are working to reduce \cite{drowning}. In addition, surf conditions can be just as dangerous for the rescuer as they are for the rescuee.
 
-To supplement the activities of surf life savers and other services at public beaches, a system has been proposed that will allow timely help to be given to people in distress while waiting to be rescued. The surf rescue boat (SRB) aims to deliver help quickly and reduce the risk to which life savers are exposed.
+To supplement the activities of surf life savers and other services at public beaches, a system has been proposed that will allow timely help to be given to people in distress while waiting to be rescued. The Surf Rescue Boat (SRB) aims to deliver help quickly and reduce the risk to which life savers are exposed.
 
 The basic concept of the design is a remotely-controlled floating water vehicle that sits in the surf away from the shore at a beach. At most times, the vehicle is idle and remains stationary in the surf. When a person in distress is seen, a life saver on the shore can remotely direct the vehicle to the person to support them while they wait for help.
 
 A simple water-based robot such as the one proposed can be constructed relatively cheaply and easily with off-the-shelf components. In the future, systems such as these may become widely available and save the lives of many along coastal beaches.
 
-The system is divided into three main sections: the remotely operated water vehicle (the "boat"), an XBee-based radio communications system between the boat and a base station, and a computer vision-based control system. Out of these, only the vehicle and communications were prototyped in this project; the control system has been developed separately in the past and time constraints prevented it from being implemented.
+The system is divided into three main sections: the remotely operated water vehicle (the ``boat"), an XBee-based radio communications system between the boat and a base station, and a computer vision-based control system. Out of these, only the vehicle and communications were prototyped in this project; the control system has been developed separately in the past and time constraints prevented it from being implemented.
 
 Design considerations taken into account include cost of construction, parts, and maintenance; usability and user-friendliness; and effectiveness as a water-based vehicle.
 
-This report describes these systems in detail, the design and testing methodology, and avenues that can be explored for future development of the surf rescue boat.
+This report describes these systems in detail, the design and testing methodology, and avenues that can be explored for future development of the Surf Rescue Boat.
 
 \section{Boat}
 
 \subsection{Mechanical}
-The remotely operated boat uses a standard surfboard as a base, and houses electronics in a watertight hard plastic case attached to the top. Two propellers are mounted to the bottom of the surfboard for movement control.
+The remotely operated boat uses a standard rescue board as a base, and houses electronics in a watertight hard plastic case attached to the top. Two propellers are mounted to the bottom of the rescue board for movement control.
 
 \subsubsection{Chassis}
-Surfboard. Chosen for its stability and familiarity in the surf. The standardness and availability of surfboards is an advantage to encouraging development of such systems. A custom-built chassis may have been designed, but would have taken more time and money. 
+Rescue board. Chosen for its stability and familiarity in the surf. The standardness and availability of rescue boards is an advantage to encouraging development of such systems. A custom-built chassis may have been designed, but would have taken more time and money. 
 
 \subsubsection{Propellors}
-2 Blue Robotics T100 Thrusters. A propeller is mounted each to the left and right of the surfboard's middle underside. Aluminium mounting plates, attached to the board with Sikaflex, were designed to distribute force and allow propellors to be detached easily.
+\begin{figure}[h!]
+\includegraphics[width=\columnwidth]{motors-mounted.jpg}
+\caption{Propellers mounted to underside of rescue board}
+\label{propmount}
+\end{figure}
+2 Blue Robotics T200 brushless motor thrusters. A propeller is mounted each to the left and right of the rescue board's middle underside. Aluminium mounting plates, attached to the board with Sikaflex, were designed to distribute force and allow propellors to be detached easily. An image of this setup is shown in Figure \ref{propmount}.
 
 \subsubsection{Electronics housing}
 Pelican 1120 Case. A laser-cut acrylic frame was made to mount the electronics in the box. Wire glands on the side of the box allow propellor wires to be fed through the box walls.
@@ -224,7 +233,7 @@ Defines the \texttt{SrbNav} class, which controls robot navigation. In manual mo
 \section{Communications}
 Communications between the SRB and the base station are achieved using XBee radios. By attaching a pair of XBee modules to the base station computer and the on-board Arduino, a virtual serial connection is created between the two devices.
 
-\subsection{NMEA 0183 sentences}
+\subsection{Protocol}
 NMEA 0183 is a communications specification designed to create a standardised serial interface for GPS devices. Every NMEA `sentence' begins with a \texttt{\$} and ends with \texttt{*CS\textbackslash r\textbackslash n}, where \texttt{CS} is a two-digit hexadecimal checksum of the sentence. Some advantages of using NMEA sentences are that they are standardised, human-readable, robust, and relatively simple to implement. 
 
 A common NMEA sentence type is \texttt{GPRMC}, the GPS recommended minimum. This sentence is used to receive information from the onboard GPS module. \texttt{GPRMC} sentences are specified as follows: \cite{gpsinfo}
@@ -265,10 +274,10 @@ The \texttt{SRBSM} sentence is sent periodically by the boat to update the base 
 \subsubsection{\texttt{SRBJS} - Joystick}
 The \texttt{SRBJS} sentence is sent by the base station for manual control of the boat.
 
-\begin{nmeaspec}{\$SRBJS,<ID>,<FwdPower>,<TgtHeading>*CS}
+\begin{nmeaspec}{\$SRBJS,<ID>,<FwdPower>,<Angle>*CS}
 \field{<ID>}{ID of target SRB}
 \field{<FwdPower>}{Forward power from -100 to 100}
-\field{<TgtHeading>}{Target heading in deg. CW from N}
+\field{<Angle>}{Angle of movement CW from -180 to 180}
 \end{nmeaspec}
 
 \subsubsection{\texttt{SRBWP} - Waypoint}
@@ -309,7 +318,9 @@ All incoming and outgoing messages are logged to the GUI window, terminal window
 The source code for \texttt{srb-base.py} and \texttt{nmea.py} can be found in Appendix A. However, this code is unstable and should not be used as-is, as it was written for testing purposes only.
 
 \section{Testing}
-Testing was performed on the power consumption of the boat in a lab setting, as well as the forward speed and turning speed of the boat under typical calm conditions.
+Testing will be performed on the power consumption of the boat in a lab setting, as well as the forward speed and turning speed of the boat under typical calm conditions.
+
+Time constraints under VRES meant that most testing could not be completed. Field testing is intended to be carried out in the near future.
 
 \subsection{Power consumption}
 
@@ -326,50 +337,50 @@ was sent from the base station to the boat, with \texttt{<FwdPower>} as the thro
 \end{center}
 was sent from the base station to halt the motors. This was repeated for the throttle levels 0 (idle), 20, 40, 60, 80, and 100.
 
-\subsubsection{Analysis and discussion}
-\begin{table}[h!]
-\begin{tabu} to \columnwidth {X[c]X[c]X[c]}
-\toprule
-\textbf{Throttle (\SI{}{\%})} & \textbf{Voltage (\SI{}{V})}  & \textbf{Current (\SI{}{A})} \\ \midrule
-0 & & \\ \midrule
-20 & & \\ \midrule
-40 & & \\ \midrule
-60 & & \\ \midrule
-80 & & \\ \midrule
-100 & & \\ \midrule
-\end{tabu}
-\caption{Power consumption test results}
-\end{table}
+%\subsubsection{Analysis and discussion}
+%\begin{table}[h!]
+%\begin{tabu} to \columnwidth {X[c]X[c]X[c]}
+%\toprule
+%\textbf{Throttle (\SI{}{\%})} & \textbf{Voltage (\SI{}{V})}  & \textbf{Current (\SI{}{A})} \\ \midrule
+%0 & & \\ \midrule
+%20 & & \\ \midrule
+%40 & & \\ \midrule
+%60 & & \\ \midrule
+%80 & & \\ \midrule
+%100 & & \\ \midrule
+%\end{tabu}
+%\caption{Power consumption test results}
+%\end{table}
 
-\begin{table}[h!]
-\begin{tabu} to \columnwidth {X[1.5c]X[c]X[2c]}
-\toprule
-\textbf{Throttle (\SI{}{\%})} & \textbf{Power (\SI{}{W})}  & \textbf{\SI{11.6}{Ah} runtime (\SI{}{min})} \\ \midrule
-0 & & \\ \midrule
-20 & & \\ \midrule
-40 & & \\ \midrule
-60 & & \\ \midrule
-80 & & \\ \midrule
-100 & & \\ \midrule
-\end{tabu}
-\caption{Power consumption analysis}
-\end{table}
+%\begin{table}[h!]
+%\begin{tabu} to \columnwidth {X[1.5c]X[c]X[2c]}
+%\toprule
+%\textbf{Throttle (\SI{}{\%})} & \textbf{Power (\SI{}{W})}  & \textbf{\SI{11.6}{Ah} runtime (\SI{}{min})} \\ \midrule
+%0 & & \\ \midrule
+%20 & & \\ \midrule
+%40 & & \\ \midrule
+%60 & & \\ \midrule
+%80 & & \\ \midrule
+%100 & & \\ \midrule
+%\end{tabu}
+%\caption{Power consumption analysis}
+%\end{table}
 
 
 \subsection{Forward speed}
 
 \subsubsection{Method}
-The boat was placed in the Brisbane River at a clear, calm location and oriented along the shoreline. A rope was attached to aid retrieval.
+The boat was placed in the water at a clear, calm location and oriented along the shoreline. A rope was attached to aid retrieval.
 
 Starting from an idle state, the message
 \begin{center}
-\texttt{\$SRBJS,0,<FwdPower>,<TgtHeading>*<CS>}
+\texttt{\$SRBJS,0,<FwdPower>,0*<CS>}
 \end{center}
-was sent from the base station to the boat, with \texttt{<FwdPower>} as the throttle value being tested and \texttt{<TgtHeading>} as the boat's current orientation. After the boat travelled roughly 20 metres, the message
+was sent from the base station to the boat, with \texttt{<FwdPower>} as the throttle value being tested. After the boat travelled roughly 20 metres, the message
 \begin{center}
 \texttt{\$SRBJS,0,0,0*46}
 \end{center}
-was sent back from the base station to halt the motors. The boat was moved back to its starting position. This process was repeated twice for each throttle level being tested.
+was sent back from the base station to halt the motors. The boat was moved back to its starting position. This process was repeated twice for each throttle level being tested, and for unloaded and loaded scenarios.
 
 Messages from the boat were captured into a file using \texttt{srb-base.py}. All messages except for \texttt{SRBSM} were removed by running the terminal command:
 \begin{center}
@@ -377,45 +388,94 @@ Messages from the boat were captured into a file using \texttt{srb-base.py}. All
 \end{center}
 which saved the results in a \texttt{.csv} file.
 
-\subsubsection{Analysis and discussion}
-\begin{table}[h!]
-\begin{tabu} to \columnwidth {X[c]X[c]X[c]X[c]X[c]X[c]X[c]}
-\toprule
-\multirow{2}{*}{\textbf{Throttle (\SI{}{\%})}} & \multicolumn{3}{c}{\textbf{Accel time (\SI{}{s})}}  & \multicolumn{3}{c}{\textbf{Max speed (\SI{}{\m\per\s})}} \\
-& 1 & 2 & avg. & 1 & 2 & avg. \\ \midrule
-25 & & \\ \midrule
-50 & & \\ \midrule
-75 & & \\ \midrule
-100 & & \\ \midrule
-\end{tabu}
-\caption{Forward speed test results}
-\end{table}
+%\subsubsection{Analysis and discussion}
+%\begin{table}[h!]
+%\begin{tabu} to \columnwidth {X[c]X[c]X[c]X[c]X[c]X[c]X[c]}
+%\toprule
+%\multirow{2}{*}{\textbf{Throttle (\SI{}{\%})}} & \multicolumn{3}{c}{\textbf{Accel time (\SI{}{s})}}  & \multicolumn{3}{c}{\textbf{Max speed (\SI{}{\m\per\s})}} \\
+%& 1 & 2 & avg. & 1 & 2 & avg. \\ \midrule
+%25 & & \\ \midrule
+%50 & & \\ \midrule
+%75 & & \\ \midrule
+%100 & & \\ \midrule
+%\end{tabu}
+%\caption{Forward speed test results}
+%\end{table}
 
-\begin{figure}[h!]
-\centering
-\caption{Forward speed vs. time}
-\end{figure}
+%\begin{figure}[h!]
+%\centering
+%\caption{Forward speed vs. time}
+%\end{figure}
+
+\subsection{Turning speed}
+
+\subsubsection{Method}
+The boat was placed in the water at a clear, calm location and oriented along the shoreline. A rope was attached to aid retrieval.
+
+Starting from an idle state, the message
+\begin{center}
+\texttt{\$SRBJS,0,<FwdPower>,180*<CS>}
+\end{center}
+was sent from the base station to the boat, with \texttt{<FwdPower>} as the throttle value being tested. After a few seconds, the message
+\begin{center}
+\texttt{\$SRBJS,0,0,0*46}
+\end{center}
+was sent back from the base station to halt the motors. The boat was moved back to its starting position. This process was repeated twice for each throttle level being tested, and for unloaded and loaded scenarios.
+
+Messages from the boat were captured into a file using \texttt{srb-base.py}. All messages except for \texttt{SRBSM} were removed by running the terminal command:
+\begin{center}
+\texttt{\$grep "SRBSM" [logfilename] > results.csv}
+\end{center}
+which saved the results in a \texttt{.csv} file.
 
 \section{Future development}
+The Surf Rescue Boat system in its current state is only an early prototype. Significantly more prototyping and testing needs to be done before it can be viably used in a real-world scenario. Some important areas to explore that have been identified are listed below.
 
 \subsection{Boat}
-% Voltage/current measurement and logging
-% More propellers, 3+ motor omni-drive
-% Higher battery capacity for longer runtime
-% Structure under boat for stability
-% On/off switch
+
+\subsubsection{Power measurement}
+In testing, external multimeters were used to measure voltage and current consumption of the boat. In the future, the boat would benefit from onboard power measurement hardware to monitor voltage and current usage in real-time. This could be used to automatically shut down or bring ashore the boat when the batteries are low.
+
+\subsubsection{Number of thrusters}
+While the two thrusters on the boat are already decently powerful, more thrusters would allow the boat to move faster under load, and reach a distressed person more quickly. Three or more thrusters arranged in different directions would increase manoeuvrability, and possibly enable onmi-directional movement.
+
+\subsubsection{Battery capacity}
+According to documentation, the T200 thrusters consume about \SI{15}{A} of current at \SI{12}{V} with full thrust. Therefore, the two \SI{5.8}{Ah} batteries will only last roughly 20 minutes at full thrust. Much larger batteries, possibly in a separate or larger case, are required for the system to be viably used in real conditions.
+
+\subsubsection{Stability structure}
+In rough surf conditions, the boat would likely be tipped over by large waves. The structure needs to be modified to lower its centre of gravity below the water, increasing stability and aiding recovery from upside down positions. This could be done by attaching a heavy metal bar on the underside of the boat that extends into the water.
+
+\subsubsection{Wiring}
+The internal frame and electronics inside the casing would benefit from better arrangement and accessibility for maintenance. Most of the signal and power wiring could be consolidated onto a PCB which will improve the arrangement and reliability of connections. At the very least, a power switch added to the current design would make testing much easier.
 
 \subsection{Communications}
-% Housing for the base station
-% Return home mechanism
-% Maintain position mechanism
+
+\subsubsection{Hardware housing}
+The communications hardware connected to the base station is a jumble of wires and exposed electronics. Ideally, these should be housed in a small box that could be easily laser-cut or 3D printed to fit. This would also allow an antenna to be mounted for the base station, increasing the range and reliability of the communications.
+
+\subsubsection{Stationary mechanism}
+In its current state, the boat turns off its thrusters when idle. This is not ideal because without powered movement, it will quickly be swept away by waves and currents. A mechanism should be added for the boat to maintain its position through powered movement when not moving to a new location.
+
+\subsubsection{Homing mechanism}
+A homing mechanism would allow the boat to be easily retrieved by a single command, and autonomously return to the base station when communications are disrupted or the battery is low. 
 
 \subsection{Computer vision}
-% Been worked on in the past
-% Connect this to the comms system
-% Brief description of the idea
+Computer vision is the third component of the Surf Rescue Boat system, which was not explored in this project. The purpose of this component is to provide an interface for guiding the boat to a desired location in the surf, without knowing coordinates or using manual joystick control.
+
+This is intended to be accomplished with a live camera feed from a tower on the shore, projected onto a computer or tablet screen. By calibrating the camera feed with a set of real-world coordinates, a simple image homography model can be created that translates camera pixel coordinates to GPS coordinates. 
+
+In this system, a user will select the target position of the boat on the screen, and this position will be automatically translated into GPS coordinates and sent to the boat. The goal of this is to allow the boat to be directed to a person in distress quickly and efficiently.
+
+The computer vision section has been previously worked on in the past, separately from this project. These may be integrated in the future.
 
 \section{Conclusion}
+The Surf Rescue Boat system aims to supplement the work of life saving services at public beaches, providing a technological solution that increases the efficiency and reduce the risk involved in life saving duties.
+
+Over the course of this project, two main components of the system were developed: the roaming water vehicle "boat", and the communications system. Significant amounts of hardware and software were created for both components. These were both developed to a testable stage as first prototypes, but time constraints prevented field testing to be carried out before this report was completed.
+
+The system as it currently stands shows potential to be used in surf rescue situations. However, it is very much a proof-of-concept, and significantly more development and testing is required before it can even be tested in the surf. In particular, the computer vision component needs to be added for the SRB to be viably used in real situations.
+
+With further development, the Surf Rescue Boat could be an invaluable tool for helping people in life saving services help those in distress. In the future, similar systems could help save countless lives in the surf along coastal public beaches.
 
 \bibliography{bibliography}
 \bibliographystyle{IEEEtran}
@@ -425,6 +485,7 @@ which saved the results in a \texttt{.csv} file.
 
 \section{Code}
 
+\subsection{\texttt{srb}}
 \srbsource{srb/srb.ino}{C++}
 \srbsource{srb/nmea.h}{C++}
 \srbsource{srb/nmea.cpp}{C++}
@@ -441,15 +502,20 @@ which saved the results in a \texttt{.csv} file.
 \srbsource{srb/srb_motor.cpp}{C++}
 \srbsource{srb/srb_nav.h}{C++}
 \srbsource{srb/srb_nav.cpp}{C++}
+
+\subsection{\texttt{srb-base}}
 \srbsource{srb-base/srb-base.py}{Python}
 \srbsource{srb-base/nmea.py}{Python}
 
 \onecolumn
 \section{Drawings}
 
+\subsection{Electronics housing}
 \srbdrawing{Top board}{top-board-drawing.pdf}
 \srbdrawing{Middle board}{middle-board-drawing.pdf}
 \srbdrawing{Bottom board}{bottom-board-drawing.pdf}
+
+\subsection{Motor mount}
 \srbdrawing{Motor mount top}{motor-mount-top-drawing.pdf}
 \srbdrawing{Motor mount bottom}{motor-mount-bottom-drawing.pdf}
 
