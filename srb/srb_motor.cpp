@@ -11,9 +11,14 @@ void SrbMotor::begin(int pins[], int sides[]) {
   // Attach motors to their pins
   for (int i = 0; i < NUM_MOTORS; i++) {
     _motors[i].attach(pins[i], SRB_SERVO_MIN, SRB_SERVO_MAX);
-    setPower(i, 0);
+    _motors[i].writeMicroseconds(1460);
     _motorSides[i] = sides[i];
   }
+
+  delay(500);
+
+  _motors[0].write(0);
+  _motors[1].write(0);
   
 }
 
