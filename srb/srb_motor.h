@@ -12,9 +12,8 @@
 #include <stdlib.h>
 #include "srb_stats.h"
 
-// Pulse width min and max for motor signals
-#define SRB_SERVO_MIN 1000
-#define SRB_SERVO_MAX 2000
+// Pulse width for idle motor signal
+#define SRB_SERVO_IDLE 1480
 
 // Motor acceleration in power percentage points per second
 #define MOTOR_ACCEL 100
@@ -80,7 +79,6 @@ class SrbMotor {
      * Motor target powers
      */
     float _currentPowers[NUM_MOTORS];
-    int _targetPowers[NUM_MOTORS];
 
     /*
      * Milliseconds since last update

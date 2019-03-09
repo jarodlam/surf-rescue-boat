@@ -10,45 +10,28 @@ void SrbMotor::begin(int pins[], int sides[]) {
   
   // Attach motors to their pins
   for (int i = 0; i < NUM_MOTORS; i++) {
-    _motors[i].attach(pins[i], SRB_SERVO_MIN, SRB_SERVO_MAX);
-    _motors[i].writeMicroseconds(1460);
+    _motors[i].attach(pins[i], SRB_SERVO_IDLE-430, SRB_SERVO_IDLE+430);
+    _motors[i].writeMicroseconds(SRB_SERVO_IDLE);
     _motorSides[i] = sides[i];
   }
 
   delay(500);
 
-  _motors[0].write(0);
-  _motors[1].write(0);
+  _motors[0].write(90);
+  _motors[1].write(90);
+
+  //_motors[0].writeMicroseconds(SRB_SERVO_IDLE);
+  //_motors[1].writeMicroseconds(SRB_SERVO_IDLE);
   
 }
 
 void SrbMotor::update() {
 
-  // Get time since last update 
-  unsigned long dt = millis() - _lastMillis;
-  _lastMillis = millis();
-
-  // Calculate amount to add to power
-  float a = (float)dt / 1000.0 * MOTOR_ACCEL;
-
-  // Check each motor if they need accelerating
-  for (int i = 0; i < NUM_MOTORS; i++) {
-
-    float dp = _targetPowers[i] - _currentPowers[i];
-    
-    if (dp == 0) {
-      continue;
-    }
-    else if (abs(dp) < a) {
-      _setMotor(i, _targetPowers[i]);
-    }
-    else {
-      int sign = (dp > 0) - (dp < 0);
-      float newPower = _currentPowers[i] + (sign*a);
-      _setMotor(i, newPower);
-    }
-    
-  }
+  // Debug
+  Serial.print("L=");
+  Serial.print(_currentPowers[0]);
+  Serial.print(" R=");
+  Serial.println(_currentPowers[1]);
   
 }
 
@@ -60,8 +43,8 @@ void SrbMotor::setPower(int motorNo, float power) {
   // Constrain to range
   power = constrain(power, -100, 100);
 
-  // Update stored power value
-  _targetPowers[motorNo] = power;
+  // Set motor
+  _setMotor(motorNo, power);
   
 }
 
@@ -102,6 +85,7 @@ void SrbMotor::_setMotor(int motorNo, float power) {
 
   // Map value from power domain to angle domain
   int val = map(power, -100, 100, 0, 180);
+  Serial.println(val);
 
   // Update stored power value and servo value
   _currentPowers[motorNo] = power;

@@ -52,7 +52,8 @@ void setup() {
   stats.battV = 11.434;
   stats.forwardPower = 0;
   stats.targetHeading = 0;
-  
+
+  Serial.println("Initialising");
 }
 
 void loop() {
@@ -68,14 +69,13 @@ void loop() {
   imu.update();      // Check IMU serial
   nav.update();      // Calculate nav based on new position/target
   motors.update();   // Accelerate motors to speeds set by nav
-
+  
   // Non-blocking loop delay
   if (millis() >= prevMillis+LOOP_DELAY) {
     prevMillis = millis();
 
     // Send status message
     comms.sendSRBSM();
-    Serial.println(stats.heading);
 
   }
 
