@@ -35,25 +35,19 @@ void setup() {
   
   // Start USB serial
   Serial.begin(9600);
+  Serial.println("Initialising");
   
   // Initialise motors
   motors.begin(motorPins, motorSides);
 
   // Set comms failsafe timeout
-  comms.setTimeout(-1);
+  comms.setTimeout(30000);
   
   // Initialise stats
   stats.ID = 0;
-  stats.state = 0;
-  stats.lat = 43.4534324;
-  stats.lon = 150.3432493;
-  stats.speed = 3.4749;
-  stats.heading = 174.3;
-  stats.battV = 11.434;
-  stats.forwardPower = 0;
-  stats.targetHeading = 0;
+  stats.lat = -27.477855;
+  stats.lon = 153.029478;
 
-  Serial.println("Initialising");
 }
 
 void loop() {

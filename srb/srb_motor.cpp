@@ -85,7 +85,6 @@ void SrbMotor::_setMotor(int motorNo, float power) {
 
   // Map value from power domain to angle domain
   int val = map(power, -100, 100, 0, 180);
-  Serial.println(val);
 
   // Update stored power value and servo value
   _currentPowers[motorNo] = power;

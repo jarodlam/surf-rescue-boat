@@ -61,6 +61,10 @@ void SrbComms::parseSentence(char *s) {
     Serial.println("' not recognised.");
     return;
   }
+
+  // Reset timeout counter
+  _lastRecvMillis = millis();
+  
 }
 
 void SrbComms::sendSRBSM() {
@@ -102,7 +106,7 @@ void SrbComms::sendSRBSM() {
   nmea.appendFloat(_stats->targetLon, 6);
   
   // 12. Target heading
-  nmea.appendFloat(_stats->targetHeading, 1);
+  nmea.appendFloat(_stats->turnPower, 1);
 
   // Checksum
   nmea.appendChecksum();
@@ -122,8 +126,8 @@ void SrbComms::_readSRBJS(Nmea *nmea) {
   // 3. Forward power
   _stats->forwardPower = strtod(nmea->nextField(), NULL);
 
-  // 4. Heading
-  _stats->targetHeading = strtod(nmea->nextField(), NULL);
+  // 4. Turning power
+  _stats->turnPower = strtod(nmea->nextField(), NULL);
 
   // Set state
   _stats->state = 1;
@@ -132,16 +136,19 @@ void SrbComms::_readSRBJS(Nmea *nmea) {
 void SrbComms::_readSRBWP(Nmea *nmea) {
   
   // Check number of fields
-  if (nmea->numFields() != 3) return;
+  if (nmea->numFields() != 4) return;
   
   // 2. SRB ID, abort if doesn't match
   int recvID = strtod(nmea->nextField(), NULL);
   if (recvID != _stats->ID) return;
 
-  // 3. Target latitude
+  // 3. Forward power
+  _stats->forwardPower = strtod(nmea->nextField(), NULL);
+
+  // 4. Target latitude
   _stats->targetLat = strtod(nmea->nextField(), NULL);
 
-  // 4. Target longitude
+  // 5. Target longitude
   _stats->targetLon = strtod(nmea->nextField(), NULL);
   
   // Set state

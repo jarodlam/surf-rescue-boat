@@ -30,7 +30,11 @@ void SrbNav::_navDisabled() {
 
 void SrbNav::_navManual() {
 
-  _moveTo(_stats->forwardPower, _stats->targetHeading);
+  // Get parameters
+  int power = _stats->forwardPower;
+  int head  = -map(_stats->turnPower, -100, 100, -180, 180);
+
+  _moveTo(power, head);
   
 }
 
@@ -43,8 +47,12 @@ void SrbNav::_navAuto() {
   // Get target heading of goal (convert to deg)
   int tHead = atan2(dLat, dLon) * 57.29578;
 
+  // Calculate distance from heading
+  int dHead = _headingDiff(tHead, _stats->heading);
+  Serial.println(dHead);
+
   // Move
-  _moveTo(_stats->forwardPower, tHead);
+  _moveTo(_stats->forwardPower, dHead);
   
 }
 
@@ -65,25 +73,26 @@ int SrbNav::_headingDiff(int goalDirection, int currentHeading) {
   
 }
 
-void SrbNav::_moveTo(int power, int tHeading) {
+void SrbNav::_moveTo(int power, int head) {
 
-  // Calculate distance from heading
-  int dHead = _headingDiff(tHeading, _stats->heading);
+  // Constrain values
+  power = constrain(power, 0, 100);
+  head  = constrain(head, -180, 180);
 
   // Set motor speeds
   int powerL = power;
   int powerR = power;
 
   // Scale motors by heading rotation
-  if (dHead < 0) {
-    powerR *= _turnMultiplier(dHead);
+  if (head < 0) {
+    powerR *= _turnMultiplier(head);
   } else {
-    powerL *= _turnMultiplier(dHead);
+    powerL *= _turnMultiplier(head);
   }
 
   // Turn motors
   _motors->setSidePower(LEFT,  powerL);
-  _motors->setSidePower(RIGHT, -powerR);
+  _motors->setSidePower(RIGHT, powerR);
   
 }
 

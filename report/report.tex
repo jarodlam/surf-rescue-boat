@@ -306,7 +306,7 @@ A NMEA sentence parser and constructor was written in C++ and Python for the boa
 \subsubsection{\texttt{SRBSM} - Status Message}
 The \texttt{SRBSM} sentence is sent periodically by the boat to update the base station with status information.
 
-\begin{nmeaspec}{\$SRBSM,<ID>,<State>,<Lat>,<Lon>,<Speed>,\\<Heading>,<BattV>,<FwdPower>,\\<TgtHeading>*CS}
+\begin{nmeaspec}{\$SRBSM,<ID>,<State>,<Lat>,<Lon>,<Speed>,\\<Heading>,<BattV>,<FwdPower>,<Turn>*CS}
 \field{<ID>}{ID of target SRB}
 \field{<State>}{\texttt{0}=disabled, \texttt{1}=manual, \texttt{2}=auto}
 \field{<Lat>}{Latitude in decimal degrees}
@@ -314,10 +314,10 @@ The \texttt{SRBSM} sentence is sent periodically by the boat to update the base 
 \field{<Speed>}{Speed in metres per second}
 \field{<Heading>}{Compass heading in deg CW from N}
 \field{<BattV>}{Current battery voltage}
-\field{<FwdPower>}{Forward power from -100 to 100}
+\field{<FwdPower>}{Forward power from 0 to 100}
 \field{<TgtLat>}{Target latitude in decimal degrees}
 \field{<TgtLon>}{Target longitude in decimal degrees}
-\field{<TgtHeading>}{Target heading in deg CW from N}
+\field{<Turn>}{Turning dir from -100 left to 100 right}
 \end{nmeaspec}
 
 \subsubsection{\texttt{SRBJS} - Joystick}
@@ -332,8 +332,9 @@ The \texttt{SRBJS} sentence is sent by the base station for manual control of th
 \subsubsection{\texttt{SRBWP} - Waypoint}
 The \texttt{SRBWP} sentence is sent by the base station to autonomously direct the boat to a set of coordinates.
 
-\begin{nmeaspec}{\$SRBJS,<ID>,<TgtLat>,<TgtLon>*CS}
+\begin{nmeaspec}{\$SRBWP,<ID>,<FwdPower>,<TgtLat>,<TgtLon>*CS}
 \field{<ID>}{ID of target SRB}
+\field{<FwdPower>}{Forward power from -100 to 100}
 \field{<TgtLat>}{Target latitude in decimal degrees}
 \field{<TgtLon>}{Target longitude in decimal degrees}
 \end{nmeaspec}

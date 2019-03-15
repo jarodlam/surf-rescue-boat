@@ -56,14 +56,14 @@ class SrbStats {
     float battV = 0;
 
     /*
-     * Forward power percentage (-100-100 manual, 0-100 auto)
+     * Forward power percentage (0 to 100)
      */
     int forwardPower = 0;
 
     /*
-     * Target compass heading in degrees from north
+     * Turn power percentage (-100 left to 100 right, manual only)
      */
-    float targetHeading = 0;
+    int turnPower = 0;
 
     /*
      * Target lat/lon in decimal degrees
