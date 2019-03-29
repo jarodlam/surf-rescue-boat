@@ -49,7 +49,8 @@ void SrbNav::_navAuto() {
 
   // Calculate distance from heading
   int dHead = _headingDiff(tHead, _stats->heading);
-  Serial.println(dHead);
+  Serial.print(dHead);
+  Serial.print(" ");
 
   // Move
   _moveTo(_stats->forwardPower, dHead);

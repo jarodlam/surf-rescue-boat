@@ -58,6 +58,7 @@ void SrbGps::_parseBuffer() {
   // 8. Speed (in knots)
   _stats->speed = _knotsToMps(nmea.nextField());
 
+  Serial.print("Received GPS coordinates: ");
   Serial.print(_stats->lat, 6);
   Serial.print(",");
   Serial.print(_stats->lon, 6);

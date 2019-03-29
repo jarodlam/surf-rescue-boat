@@ -8,7 +8,7 @@
 #define srb_serial_h
 
 #define SERIAL_BUFFER_SIZE 1024
-#define SERIAL_BUFFER_TIMEOUT 500
+#define SERIAL_BUFFER_TIMEOUT 100
 
 #include <Arduino.h>
 #include "srb_stats.h"
